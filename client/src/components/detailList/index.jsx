@@ -2,6 +2,7 @@ import "./index.less";
 
 import {
   AtActivityIndicator,
+  AtAvatar,
   AtMessage,
   AtTabs,
   AtTabsPane
@@ -49,22 +50,18 @@ export default class DetailBanner extends Component {
     }
 
     componentDidMount() {
-        getFoodSys(null, (res) => {
-            this.setState({
-                sysList: res.map(item => {
-                    return { ...item, title: item.name }
-                }),
-            }, () => {
-                getFoodBySys({
-                    sysId: this.state.sysList[0]
-                }, res => {
-                    this.setState({
-                        currentFoodList: res,
-                        // loading: false
-                    })
-                }, error => {
-                    console.log(error)
+        getFoodSys(null, (sysRes = []) => {
+            getFoodBySys({
+                sysId: sysRes && sysRes[0] && sysRes[0]._id
+            }, res => {
+                this.setState({
+                    currentFoodList: res,
+                    sysList: sysRes.map(item => {
+                        return { ...item, title: item.name }
+                    }),
                 })
+            }, error => {
+                console.log(error)
             })
         }, (error) => {
             console.log(error)
@@ -73,6 +70,7 @@ export default class DetailBanner extends Component {
 
     render() {
         const { current, loading, sysList = [], currentFoodList = [] } = this.state;
+        console.log(currentFoodList)
         return <View className='at-row' style={{ position: 'relative' }}>
             <AtMessage />
             {
@@ -80,7 +78,6 @@ export default class DetailBanner extends Component {
             }
             <AtTabs
                 current={current}
-                // scroll
                 height='95vh'
                 tabDirection='vertical'
                 tabList={sysList}
@@ -90,7 +87,13 @@ export default class DetailBanner extends Component {
                         return <AtTabsPane key={item._id} tabDirection='vertical' current={current} index={index}>
                             {
                                 currentFoodList.length ? currentFoodList.map(foodItem => {
-                                    return <View key={foodItem._id} style='font-size:18px;text-align:center;height:200px;'>{foodItem.name || '没显示'}</View>
+                                    return <View className='food_item' key={foodItem._id} >
+                                        <AtAvatar size='large' image={foodItem.avatar || ''} ></AtAvatar>
+                                        <View className='food_info'>
+                                            <View className='food_name'>{foodItem.name}</View>
+                                            <View className='food_desc'>{foodItem.desc}</View>
+                                        </View>
+                                    </View>
                                 }) : <View style='font-size:18px;text-align:center;height:200px;'>还没有菜品嗷</View>
                             }
                         </AtTabsPane>

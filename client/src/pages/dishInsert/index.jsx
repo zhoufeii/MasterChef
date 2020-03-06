@@ -38,12 +38,6 @@ export default class DishInsert extends Component {
             desc: '',
             pics: [{
                 url: 'http://macdn.microants.cn/2/pro/952c69fcaf0b3c3284462f8169b9a9d91583161399543.jpg?x-oss-process=image/resize,w_350',
-            },
-            {
-                url: 'http://macdn.microants.cn/2/pro/952c69fcaf0b3c3284462f8169b9a9d91583161399543.jpg?x-oss-process=image/resize,w_350',
-            },
-            {
-                url: 'http://macdn.microants.cn/2/pro/952c69fcaf0b3c3284462f8169b9a9d91583161399543.jpg?x-oss-process=image/resize,w_350',
             }]
         }
     }
@@ -88,6 +82,7 @@ export default class DishInsert extends Component {
 
 
     onItemChange = (prop, value) => {
+        console.log(value)
         if (prop === 'sysId') {
             const { sysList = [] } = this.state;
             const currentSysList = sysList.filter(item => item.value === value);
@@ -98,12 +93,20 @@ export default class DishInsert extends Component {
             this.setState({
                 sysName: currentSysName
             })
+            return;
         }
-        if (value instanceof Object) {
+        if (value instanceof Object && !(value instanceof Array)) {
             this.setState({
                 [prop]: value.target.value
             }, () => {
                 console.log(this.state)
+            })
+            return;
+        }
+        if (prop === 'pics' && value.length > 3) {
+            Taro.atMessage({
+                message: '最多上传3张图片！',
+                type: 'fail',
             })
             return;
         }
@@ -115,13 +118,18 @@ export default class DishInsert extends Component {
     }
 
     onFail = (message) => {
+        console.log(message)
+        if (message.errMsg === 'chooseImage:fail cancel') {
+            return;
+        }
         Taro.atMessage({
-            message,
+            message: message.errMsg,
             type: 'fail',
         })
     }
 
     onImageClick = (index, file) => {
+
         console.log(index, file)
     }
 
@@ -202,8 +210,9 @@ export default class DishInsert extends Component {
                             placeholder='请输入新菜简介'
                         />
                         <AtImagePicker
-                            multiple
+                            count={1}
                             files={pics}
+                            showAddBtn={pics.length < 1}
                             onChange={this.onItemChange.bind(this, 'pics')}
                             onFail={this.onFail.bind(this)}
                             onImageClick={this.onImageClick.bind(this)}
