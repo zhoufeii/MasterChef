@@ -1,7 +1,9 @@
+let env = process.env.NODE_ENV === 'online-p5ijz' ? 'online' : 'dev'
+// TODO:改写为云函数！！！！
 
 function addFoodSys(data, scb, fcb) {
     const db = wx.cloud.database()
-    db.collection('dev_sys').add({ data }).then(res => {
+    db.collection(`${env}_sys`).add({ data }).then(res => {
         scb(res.data)
     }).catch(error => {
         fcb(error)
@@ -10,7 +12,7 @@ function addFoodSys(data, scb, fcb) {
 
 function getFoodSys(data, scb, fcb) {
     const db = wx.cloud.database()
-    db.collection('dev_sys').get().then(res => {
+    db.collection(`${env}_sys`).get().then(res => {
         scb(res.data)
     }).catch(error => {
         fcb(error)
@@ -19,7 +21,7 @@ function getFoodSys(data, scb, fcb) {
 
 function addFood(data, scb, fcb) {
     const db = wx.cloud.database()
-    db.collection('dev_foods').add({ data }).then(res => {
+    db.collection(`${env}_foods`).add({ data }).then(res => {
         scb(res.data)
     }).catch(error => {
         fcb(error)
@@ -28,7 +30,7 @@ function addFood(data, scb, fcb) {
 
 function getFood(data, scb, fcb) {
     const db = wx.cloud.database()
-    db.collection('dev_foods').get().then(res => {
+    db.collection(`${env}_foods`).get().then(res => {
         scb(res.data)
     }).catch(error => {
         fcb(error)
@@ -37,7 +39,7 @@ function getFood(data, scb, fcb) {
 
 function getFoodBySys(data, scb, fcb) {
     const db = wx.cloud.database()
-    db.collection('dev_foods').where(data).get().then(res => {
+    db.collection(`${env}_foods`).where(data).get().then(res => {
         scb(res.data)
     }).catch(error => {
         fcb(error)

@@ -10,18 +10,13 @@ import {
 
 import Taro, { Component } from "@tarojs/taro";
 
-import {
-  getFoodBySys,
-  getFoodSys
-} from "../../service/index";
-
 export default class DetailBanner extends Component {
 
     constructor() {
         super();
         this.state = {
             current: 0,
-            // loading: true,
+            loading: true,
             sysList: [],
             currentFoodList: []
         }
@@ -34,43 +29,62 @@ export default class DetailBanner extends Component {
         })
     }
 
-    onToggleCurrent = (currentIndex) => {
+    onToggleCurrent = (current) => {
         const { sysList = [] } = this.state;
-        const currentSysId = sysList[currentIndex]._id
-        getFoodBySys({
-            sysId: currentSysId
-        }, res => {
-            this.setState({
-                currentFoodList: res,
-                current: currentIndex
-            })
-        }, error => {
-            console.log(error)
+        const currentSysId = sysList[current]._id
+        this.setState({
+            current
+        }, this.getFoodsBySys.bind(this, { sysId: currentSysId }))
+    }
+
+    getFoodSys = (data = {}) => {
+        const _this = this;
+        _this.setState({
+            loading: true
+        })
+        wx.cloud.callFunction({
+            name: 'foodSys',
+            data: { ...data, action: 'getFoodSys' },
+            complete: (res = {}) => {
+                const result = res.result && res.result.data || [];
+                _this.setState({
+                    sysList: result.map(item => {
+                        return { ...item, title: item.name }
+                    }),
+                    loading: false
+                }, () => {
+                    _this.getFoodsBySys(result[0] && result[0].sysId || '')
+                })
+            }
+        })
+    }
+
+    getFoodsBySys = (data = {}) => {
+        const _this = this;
+        _this.setState({
+            loading: true
+        })
+        wx.cloud.callFunction({
+            name: 'foodSys',
+            data: { ...data, action: 'getFoodsBySys' },
+            complete: (res = {}) => {
+                console.log(res)
+                const result = res.result && res.result.data || [];
+                console.log('callFunction test result: ', result)
+                _this.setState({
+                    // currentFoodList: result,
+                    loading: false
+                })
+            }
         })
     }
 
     componentDidMount() {
-        getFoodSys(null, (sysRes = []) => {
-            getFoodBySys({
-                sysId: sysRes && sysRes[0] && sysRes[0]._id
-            }, res => {
-                this.setState({
-                    currentFoodList: res,
-                    sysList: sysRes.map(item => {
-                        return { ...item, title: item.name }
-                    }),
-                })
-            }, error => {
-                console.log(error)
-            })
-        }, (error) => {
-            console.log(error)
-        })
+        this.getFoodSys()
     }
 
     render() {
         const { current, loading, sysList = [], currentFoodList = [] } = this.state;
-        console.log(currentFoodList)
         return <View className='at-row' style={{ position: 'relative' }}>
             <AtMessage />
             {

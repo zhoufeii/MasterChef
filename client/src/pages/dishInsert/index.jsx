@@ -15,13 +15,6 @@ import {
 import { View } from "@tarojs/components";
 import Taro, { Component } from "@tarojs/taro";
 
-import {
-  addFood,
-  addFoodSys,
-  getFood,
-  getFoodSys
-} from "../../service/index";
-
 // import DetailBanner from "../../components/detailBanner";
 // import DetailList from "../../components/DetailList";
 
@@ -45,22 +38,7 @@ export default class DishInsert extends Component {
     componentWillMount() { }
 
     componentDidMount() {
-        getFoodSys(null, (res) => {
-            console.log(res)
-            this.setState({
-                sysList: res.map(item => {
-                    return { ...item, label: item.name, desc: item.desc, value: item._id }
-                })
-            })
-        }, (error) => {
-            console.log(error)
-        })
-
-        getFood(null, (res) => {
-            console.log(res)
-        }, (error) => {
-            console.log(error)
-        })
+        this.getFoodSys()
     }
 
     componentWillUnmount() { }
@@ -73,6 +51,59 @@ export default class DishInsert extends Component {
         navigationBarTitleText: '添加类别/新菜'
     }
 
+    addFood = (data = {}) => {
+        const _this = this;
+        wx.cloud.callFunction({
+            name: 'foods',
+            data: { ...data, action: 'addFood' },
+            complete: res => {
+                console.log('callFunction test result: ', res)
+                _this.onShowMessage('success', '添加新菜成功')
+                _this.onReset()
+            }
+        })
+    }
+
+    getFoods = (data = {}) => {
+        wx.cloud.callFunction({
+            name: 'foods',
+            data: { ...data, action: 'getFoods' },
+            complete: (res = {}) => {
+                console.log('callFunction test result: ', res)
+            }
+        })
+    }
+
+    addFoodSys = (data = {}) => {
+        const _this = this;
+        wx.cloud.callFunction({
+            name: 'foodSys',
+            data: { ...data, action: 'addFoodSys' },
+            complete: res => {
+                console.log('callFunction test result: ', res)
+                _this.onShowMessage('success', '添加类别成功')
+                _this.onReset()
+            }
+        })
+    }
+
+    getFoodSys = (data = {}) => {
+        const _this = this;
+        wx.cloud.callFunction({
+            name: 'foodSys',
+            data: { ...data, action: 'getFoodSys' },
+            complete: (res = {}) => {
+                const result = res.result && res.result.data || [];
+                console.log('callFunction test result: ', result)
+                _this.setState({
+                    sysList: result.map(item => {
+                        return { ...item, label: item.name, desc: item.desc, value: item._id }
+                    })
+                })
+            }
+        })
+    }
+
     onShowMessage = (type = '', message = '') => {
         Taro.atMessage({
             message,
@@ -80,9 +111,7 @@ export default class DishInsert extends Component {
         })
     }
 
-
     onItemChange = (prop, value) => {
-        console.log(value)
         if (prop === 'sysId') {
             const { sysList = [] } = this.state;
             const currentSysList = sysList.filter(item => item.value === value);
@@ -91,15 +120,14 @@ export default class DishInsert extends Component {
                 currentSysName = currentSysList[0].label
             }
             this.setState({
-                sysName: currentSysName
+                sysName: currentSysName,
+                sysId: value
             })
             return;
         }
         if (value instanceof Object && !(value instanceof Array)) {
             this.setState({
                 [prop]: value.target.value
-            }, () => {
-                console.log(this.state)
             })
             return;
         }
@@ -112,13 +140,10 @@ export default class DishInsert extends Component {
         }
         this.setState({
             [prop]: value
-        }, () => {
-            console.log(this.state)
         })
     }
 
     onFail = (message) => {
-        console.log(message)
         if (message.errMsg === 'chooseImage:fail cancel') {
             return;
         }
@@ -135,7 +160,6 @@ export default class DishInsert extends Component {
 
     onDishSubmit = () => {
         const { name = '', desc = '', pics = [], sysId = '', sysName = '' } = this.state;
-        console.log(this.state)
         const data = {
             name,
             desc,
@@ -143,13 +167,8 @@ export default class DishInsert extends Component {
             sysId,
             sysName,
         }
-        // console.log(data)
-        addFood(data, (res) => {
-            this.onShowMessage('success', '添加新菜成功')
-            this.onReset()
-        }, (error) => {
-            console.log(error)
-        })
+        console.log(data)
+        this.addFood(data)
     }
 
     onSysSubmit = () => {
@@ -158,16 +177,10 @@ export default class DishInsert extends Component {
             name: sysName,
             desc: sysDesc,
         }
-        addFoodSys(data, (res) => {
-            this.onShowMessage('success', '添加类别成功')
-            this.onReset()
-        }, (error) => {
-            console.log(error)
-        })
+        this.addFoodSys(data)
     }
 
     onReset = (ev) => {
-        console.log(ev)
         this.setState({
             sysName: '',
             sysDesc: '',
@@ -259,6 +272,7 @@ export default class DishInsert extends Component {
                         options={sysList}
                         value={sysId}
                         onClick={(ev) => {
+                            console.log(ev)
                             this.onItemChange('sysId', ev)
                             this.onToggleIsOpen()
                         }}

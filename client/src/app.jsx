@@ -14,33 +14,14 @@ import Index from "./pages/index";
 class App extends Component {
 
   componentDidMount() {
-    console.log(process.env.TARO_ENV)
-    console.log(process.env.NODE_ENV)
     if (process.env.TARO_ENV === 'weapp') {
+      console.log('=====process.env.NODE_ENV===')
+      console.log(process.env.NODE_ENV)
       Taro.cloud.init({
         env: process.env.NODE_ENV,
         traceUser: true
       })
     }
-
-    // wx.cloud.callFunction({
-    //   name: 'initContext',
-    //   data: {},
-    //   success: res => {
-    //     // wx.showToast({
-    //     //   title: '调用成功',
-    //     // })
-    //     console.log('=======res======')
-    //     console.log(res)
-    //   },
-    //   fail: err => {
-    //     // wx.showToast({
-    //     //   icon: 'none',
-    //     //   title: '调用失败',
-    //     // })
-    //     console.error('[云函数] [sum] 调用失败：', err)
-    //   }
-    // })
   }
 
   componentDidShow() { }

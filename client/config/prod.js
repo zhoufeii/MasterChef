@@ -1,6 +1,6 @@
 module.exports = {
   env: {
-    NODE_ENV: '"production"'
+    NODE_ENV: '"online-p5ijz"'
   },
   defineConstants: {},
   mini: {},
