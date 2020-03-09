@@ -32,32 +32,35 @@ const cloudUploadImage = (dir, event, callback) => {
     Taro.getFileSystemManager().readFile({
         filePath, //选择图片返回的相对路径
         encoding: 'base64', //编码格式
-    }).then(res => {
-        Taro.cloud.callFunction({
-            name: 'utils',
-            data: {
-                action: 'upload',
-                cloudPath: `${dir}/${Date.now()}_${Math.floor(Math.random() * 100000)}.png`,
-                fileContent: res.data
-            }
-        }).then(res => {
-            const fileID = res.result.fileID;
+        success: (res) => {
             Taro.cloud.callFunction({
                 name: 'utils',
                 data: {
-                    action: 'exchangeLink',
-                    fileList: [fileID]
+                    action: 'upload',
+                    cloudPath: `${dir}/${Date.now()}_${Math.floor(Math.random() * 100000)}.png`,
+                    fileContent: res.data
                 }
             }).then(res => {
-                callback(res)
+                const fileID = res.result.fileID;
+                Taro.cloud.callFunction({
+                    name: 'utils',
+                    data: {
+                        action: 'exchangeLink',
+                        fileList: [fileID]
+                    }
+                }).then(res => {
+                    callback(res)
+                }).catch(err => {
+                    console.log(err)
+                })
             }).catch(err => {
                 console.log(err)
             })
-        }).catch(err => {
+        },
+        fail: (err) => {
             console.log(err)
-        })
+        }
     })
-
 }
 
 

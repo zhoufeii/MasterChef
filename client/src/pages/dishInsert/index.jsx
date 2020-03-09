@@ -1,6 +1,7 @@
 import "./index.less";
 
 import {
+  AtActivityIndicator,
   AtButton,
   AtFloatLayout,
   AtForm,
@@ -35,7 +36,8 @@ export default class DishInsert extends Component {
             sysDesc: '',
             name: '',
             desc: '',
-            pics: []
+            pics: [],
+            loading: false
         }
     }
 
@@ -55,18 +57,19 @@ export default class DishInsert extends Component {
         navigationBarTitleText: '添加类别/新菜'
     }
 
+    upload = (dir, event, callback) => {
+        this.setState({
+            loading: true
+        }, cloudUploadImage.bind(this, dir, event, callback))
+    }
+
     updatePics = (res) => {
-        console.log('====updatePics===')
-        console.log(res)
         const fileList = res.result && res.result.fileList || [];
         const url = fileList.length && fileList[0] && fileList[0].tempFileURL || ''
         this.setState({
-            pics: [{ url }]
+            pics: [{ url }],
+            loading: false
         })
-    }
-
-    upload = (dir, event, callback) => {
-        cloudUploadImage(dir, event, callback)
     }
 
     addFood = (data = {}) => {
@@ -184,7 +187,10 @@ export default class DishInsert extends Component {
             showToast('所属分类不可为空~');
             return;
         }
-        this.addFood(data)
+
+        this.setState({
+            loading: true
+        }, this.addFood.bind(this, data))
     }
 
     onSysSubmit = () => {
@@ -207,7 +213,8 @@ export default class DishInsert extends Component {
             sysId: '',
             name: '',
             desc: '',
-            pics: []
+            pics: [],
+            loading: false
         })
     }
 
@@ -219,11 +226,13 @@ export default class DishInsert extends Component {
     }
 
     render() {
-        const { isOpened = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
+        const { isOpened = false, loading = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
             <View >
                 <AtMessage />
-
+                {
+                    loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
+                }
                 {
                     type === 'dish' ? <AtForm
                         onSubmit={this.onDishSubmit.bind(this)}
