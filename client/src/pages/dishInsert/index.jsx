@@ -15,6 +15,12 @@ import {
 import { View } from "@tarojs/components";
 import Taro, { Component } from "@tarojs/taro";
 
+import {
+  cloudUploadImage,
+  errorHandler,
+  showToast
+} from "../../utils/index";
+
 // import DetailBanner from "../../components/detailBanner";
 // import DetailList from "../../components/DetailList";
 
@@ -29,9 +35,7 @@ export default class DishInsert extends Component {
             sysDesc: '',
             name: '',
             desc: '',
-            pics: [{
-                url: 'http://macdn.microants.cn/2/pro/952c69fcaf0b3c3284462f8169b9a9d91583161399543.jpg?x-oss-process=image/resize,w_350',
-            }]
+            pics: []
         }
     }
 
@@ -51,17 +55,30 @@ export default class DishInsert extends Component {
         navigationBarTitleText: '添加类别/新菜'
     }
 
+    updatePics = (res) => {
+        console.log('====updatePics===')
+        console.log(res)
+        const fileList = res.result && res.result.fileList || [];
+        const url = fileList.length && fileList[0] && fileList[0].tempFileURL || ''
+        this.setState({
+            pics: [{ url }]
+        })
+    }
+
+    upload = (dir, event, callback) => {
+        cloudUploadImage(dir, event, callback)
+    }
+
     addFood = (data = {}) => {
         const _this = this;
         wx.cloud.callFunction({
             name: 'foods',
             data: { ...data, action: 'addFood' },
-            complete: res => {
-                console.log('callFunction test result: ', res)
-                _this.onShowMessage('success', '添加新菜成功')
-                _this.onReset()
-            }
-        })
+        }).then(res => {
+            console.log('callFunction test result: ', res)
+            showToast('添加新菜成功', 'success')
+            _this.onReset()
+        }).catch(errorHandler)
     }
 
     getFoods = (data = {}) => {
@@ -79,12 +96,10 @@ export default class DishInsert extends Component {
         wx.cloud.callFunction({
             name: 'foodSys',
             data: { ...data, action: 'addFoodSys' },
-            complete: res => {
-                console.log('callFunction test result: ', res)
-                _this.onShowMessage('success', '添加类别成功')
-                _this.onReset()
-            }
-        })
+        }).then(res => {
+            showToast('添加类别成功', 'success')
+            _this.onReset()
+        }).catch(errorHandler)
     }
 
     getFoodSys = (data = {}) => {
@@ -101,13 +116,6 @@ export default class DishInsert extends Component {
                     })
                 })
             }
-        })
-    }
-
-    onShowMessage = (type = '', message = '') => {
-        Taro.atMessage({
-            message,
-            type,
         })
     }
 
@@ -147,10 +155,11 @@ export default class DishInsert extends Component {
         if (message.errMsg === 'chooseImage:fail cancel') {
             return;
         }
-        Taro.atMessage({
-            message: message.errMsg,
-            type: 'fail',
-        })
+        console.log(message)
+        // Taro.atMessage({
+        //     message: message.errMsg,
+        //     type: 'fail',
+        // })
     }
 
     onImageClick = (index, file) => {
@@ -159,15 +168,22 @@ export default class DishInsert extends Component {
     }
 
     onDishSubmit = () => {
-        const { name = '', desc = '', pics = [], sysId = '', sysName = '' } = this.state;
+        const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = this.state;
         const data = {
             name,
             desc,
-            pics,
             sysId,
             sysName,
+            pics
         }
-        console.log(data)
+        if (!name) {
+            showToast('名称不可为空~');
+            return;
+        }
+        if (!sysId) {
+            showToast('所属分类不可为空~');
+            return;
+        }
         this.addFood(data)
     }
 
@@ -176,6 +192,10 @@ export default class DishInsert extends Component {
         const data = {
             name: sysName,
             desc: sysDesc,
+        }
+        if (!sysName) {
+            showToast('分类名称不可为空~');
+            return;
         }
         this.addFoodSys(data)
     }
@@ -199,10 +219,11 @@ export default class DishInsert extends Component {
     }
 
     render() {
-        const { isOpened = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [] } = this.state;
+        const { isOpened = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
             <View >
                 <AtMessage />
+
                 {
                     type === 'dish' ? <AtForm
                         onSubmit={this.onDishSubmit.bind(this)}
@@ -226,7 +247,10 @@ export default class DishInsert extends Component {
                             count={1}
                             files={pics}
                             showAddBtn={pics.length < 1}
-                            onChange={this.onItemChange.bind(this, 'pics')}
+                            onChange={(event) => {
+                                // this.onItemChange.bind(this, 'pics')
+                                this.upload('foods', event, this.updatePics.bind(this))
+                            }}
                             onFail={this.onFail.bind(this)}
                             onImageClick={this.onImageClick.bind(this)}
                         />

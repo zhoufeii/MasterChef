@@ -31,31 +31,9 @@ export default class DetailBanner extends Component {
 
     onToggleCurrent = (current) => {
         const { sysList = [] } = this.state;
-        const currentSysId = sysList[current]._id
         this.setState({
-            current
-        }, this.getFoodsBySys.bind(this, { sysId: currentSysId }))
-    }
-
-    getFoodSys = (data = {}) => {
-        const _this = this;
-        _this.setState({
-            loading: true
-        })
-        wx.cloud.callFunction({
-            name: 'foodSys',
-            data: { ...data, action: 'getFoodSys' },
-            complete: (res = {}) => {
-                const result = res.result && res.result.data || [];
-                _this.setState({
-                    sysList: result.map(item => {
-                        return { ...item, title: item.name }
-                    }),
-                    loading: false
-                }, () => {
-                    _this.getFoodsBySys(result[0] && result[0].sysId || '')
-                })
-            }
+            current,
+            currentFoodList: sysList[current].containFoods || []
         })
     }
 
@@ -68,11 +46,14 @@ export default class DetailBanner extends Component {
             name: 'foodSys',
             data: { ...data, action: 'getFoodsBySys' },
             complete: (res = {}) => {
-                console.log(res)
-                const result = res.result && res.result.data || [];
-                console.log('callFunction test result: ', result)
+                const result = res.result && res.result.list || [];
                 _this.setState({
-                    // currentFoodList: result,
+                    sysList: result.filter(item => {
+                        return item.containFoods.length
+                    }).map(item => {
+                        return { ...item, title: item.name }
+                    }),
+                    currentFoodList: result[0].containFoods,
                     loading: false
                 })
             }
@@ -80,7 +61,7 @@ export default class DetailBanner extends Component {
     }
 
     componentDidMount() {
-        this.getFoodSys()
+        this.getFoodsBySys()
     }
 
     render() {
@@ -90,6 +71,8 @@ export default class DetailBanner extends Component {
             {
                 loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
             }
+            <AtToast isOpened text="{text}" icon="{icon}"></AtToast>
+
             <AtTabs
                 current={current}
                 height='95vh'
@@ -101,8 +84,10 @@ export default class DetailBanner extends Component {
                         return <AtTabsPane key={item._id} tabDirection='vertical' current={current} index={index}>
                             {
                                 currentFoodList.length ? currentFoodList.map(foodItem => {
-                                    return <View className='food_item' key={foodItem._id} >
-                                        <AtAvatar size='large' image={foodItem.avatar || ''} ></AtAvatar>
+                                    return <View className='food_item' key={foodItem._id} onClick={() => {
+                                        console.log(foodItem)
+                                    }}>
+                                        <AtAvatar size='large' image={foodItem.pics.length && foodItem.pics[0].url || ''} ></AtAvatar>
                                         <View className='food_info'>
                                             <View className='food_name'>{foodItem.name}</View>
                                             <View className='food_desc'>{foodItem.desc}</View>

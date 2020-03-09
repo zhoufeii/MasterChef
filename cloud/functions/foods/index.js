@@ -26,14 +26,13 @@ exports.main = async (event, context) => {
 }
 
 async function addFood(event) {
-    const { name = '', desc = '', sysId = '', sysName = '', avatar = '', pics = [] } = event;
+    const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = event;
     return await db.collection('dev_foods').add({
         data: {
             name,
             desc,
             sysName,
             sysId,
-            avatar,
             pics
         }
     })

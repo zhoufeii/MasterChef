@@ -1,56 +1,69 @@
 // 上传图片
+import Taro from "@tarojs/taro";
 
-const uploadImage = () => {
-    // 选择图片
-    wx.chooseImage({
-        count: 1,
-        sizeType: ['compressed'],
-        sourceType: ['album', 'camera'],
-        success: function (res) {
+const errorHandler = (error) => {
+    const errorMsg = error.errMsg || error.errMessage || error.errorMessage || error.errorMsg || '';
+    Taro.showToast({
+        title: errorMsg,
+        // image: require('../assets/images/error.png'),
+        mask: true,
+        duration: 1500
+    });
+}
 
-            wx.showLoading({
-                title: '上传中',
-            })
-
-            const filePath = res.tempFilePaths[0]
-
-            // 上传图片
-            const cloudPath = 'my-image' + filePath.match(/\.[^.]+?$/)[0]
-            wx.cloud.uploadFile({
-                cloudPath,
-                filePath,
-                success: res => {
-                    console.log('[上传文件] 成功：', res)
-
-                    app.globalData.fileID = res.fileID
-                    app.globalData.cloudPath = cloudPath
-                    app.globalData.imagePath = filePath
-
-                    wx.navigateTo({
-                        url: '../storageConsole/storageConsole'
-                    })
-                },
-                fail: e => {
-                    console.error('[上传文件] 失败：', e)
-                    wx.showToast({
-                        icon: 'none',
-                        title: '上传失败',
-                    })
-                },
-                complete: () => {
-                    wx.hideLoading()
-                }
-            })
-
-        },
-        fail: e => {
-            console.error(e)
-        }
+const showToast = (title = '', icon = '', callback = () => { }) => {
+    Taro.showToast({
+        title,
+        icon: icon || 'none',
+        // image: require('../assets/images/success.png'),
+        mask: true,
+        duration: 1500
+    }).then(res => {
+        callback()
     })
-};
+}
+
+const cloudUploadImage = (dir, event, callback) => {
+    console.log('===cloudUploadImage===')
+    console.log(dir)
+    console.log(event)
+    const filePath = event[0].url;
+    console.log(filePath)
+    Taro.getFileSystemManager().readFile({
+        filePath, //选择图片返回的相对路径
+        encoding: 'base64', //编码格式
+    }).then(res => {
+        Taro.cloud.callFunction({
+            name: 'utils',
+            data: {
+                action: 'upload',
+                cloudPath: `${dir}/${Date.now()}_${Math.floor(Math.random() * 100000)}.png`,
+                fileContent: res.data
+            }
+        }).then(res => {
+            const fileID = res.result.fileID;
+            Taro.cloud.callFunction({
+                name: 'utils',
+                data: {
+                    action: 'exchangeLink',
+                    fileList: [fileID]
+                }
+            }).then(res => {
+                callback(res)
+            }).catch(err => {
+                console.log(err)
+            })
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+
+}
 
 
 
 module.exports = {
-    uploadImage,
+    errorHandler,
+    showToast,
+    cloudUploadImage
 }
