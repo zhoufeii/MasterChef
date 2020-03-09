@@ -47,13 +47,14 @@ export default class DetailBanner extends Component {
             data: { ...data, action: 'getFoodsBySys' },
             complete: (res = {}) => {
                 const result = res.result && res.result.list || [];
+                const sysList = result.filter(item => {
+                    return item.containFoods.length
+                }).map(item => {
+                    return { ...item, title: item.name }
+                })
                 _this.setState({
-                    sysList: result.filter(item => {
-                        return item.containFoods.length
-                    }).map(item => {
-                        return { ...item, title: item.name }
-                    }),
-                    currentFoodList: result[0].containFoods,
+                    sysList,
+                    currentFoodList: sysList[0].containFoods,
                     loading: false
                 })
             }
@@ -84,9 +85,7 @@ export default class DetailBanner extends Component {
                         return <AtTabsPane key={item._id} tabDirection='vertical' current={current} index={index}>
                             {
                                 currentFoodList.length ? currentFoodList.map(foodItem => {
-                                    return <View className='food_item' key={foodItem._id} onClick={() => {
-                                        console.log(foodItem)
-                                    }}>
+                                    return <View className='food_item' key={foodItem._id} onClick={() => { }}>
                                         <AtAvatar size='large' image={foodItem.pics.length && foodItem.pics[0].url || ''} ></AtAvatar>
                                         <View className='food_info'>
                                             <View className='food_name'>{foodItem.name}</View>

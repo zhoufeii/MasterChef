@@ -4,6 +4,7 @@ cloud.init({
     env: cloud.DYNAMIC_CURRENT_ENV
 });
 const db = cloud.database()
+const DATABASE_ENV = process.env.NODE_ENV === 'development' ? 'dev_' : 'online_'
 // 云函数入口函数
 
 exports.main = async (event, context) => {
@@ -27,7 +28,7 @@ exports.main = async (event, context) => {
 
 async function addFood(event) {
     const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = event;
-    return await db.collection('dev_foods').add({
+    return await db.collection(`${DATABASE_ENV}foods`).add({
         data: {
             name,
             desc,
@@ -39,5 +40,5 @@ async function addFood(event) {
 }
 
 async function getFoods(event) {
-    return await db.collection('dev_foods').get()
+    return await db.collection(`${DATABASE_ENV}foods`).get()
 }

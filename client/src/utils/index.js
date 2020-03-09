@@ -24,11 +24,7 @@ const showToast = (title = '', icon = '', callback = () => { }) => {
 }
 
 const cloudUploadImage = (dir, event, callback) => {
-    console.log('===cloudUploadImage===')
-    console.log(dir)
-    console.log(event)
     const filePath = event[0].url;
-    console.log(filePath)
     Taro.getFileSystemManager().readFile({
         filePath, //选择图片返回的相对路径
         encoding: 'base64', //编码格式

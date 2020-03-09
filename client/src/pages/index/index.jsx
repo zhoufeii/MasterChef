@@ -33,7 +33,6 @@ export default class Index extends Component {
       <View className='index'>
         <AtGrid onClick={item => {
           this.navigateTo(item.url)
-          // console.log(e)
         }} hasBorder={false} data={
           [
             {

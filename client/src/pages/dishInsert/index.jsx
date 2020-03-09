@@ -78,7 +78,6 @@ export default class DishInsert extends Component {
             name: 'foods',
             data: { ...data, action: 'addFood' },
         }).then(res => {
-            console.log('callFunction test result: ', res)
             showToast('添加新菜成功', 'success')
             _this.onReset()
         }).catch(errorHandler)
@@ -88,9 +87,7 @@ export default class DishInsert extends Component {
         wx.cloud.callFunction({
             name: 'foods',
             data: { ...data, action: 'getFoods' },
-            complete: (res = {}) => {
-                console.log('callFunction test result: ', res)
-            }
+            complete: (res = {}) => { }
         })
     }
 
@@ -158,15 +155,13 @@ export default class DishInsert extends Component {
         if (message.errMsg === 'chooseImage:fail cancel') {
             return;
         }
-        console.log(message)
-        // Taro.atMessage({
-        //     message: message.errMsg,
-        //     type: 'fail',
-        // })
+        Taro.atMessage({
+            message: message || message.errMsg,
+            type: 'fail',
+        })
     }
 
     onImageClick = (index, file) => {
-
         console.log(index, file)
     }
 
@@ -305,7 +300,6 @@ export default class DishInsert extends Component {
                         options={sysList}
                         value={sysId}
                         onClick={(ev) => {
-                            console.log(ev)
                             this.onItemChange('sysId', ev)
                             this.onToggleIsOpen()
                         }}

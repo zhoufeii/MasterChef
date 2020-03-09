@@ -4,6 +4,8 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 });
 const db = cloud.database()
+const DATABASE_ENV = process.env.NODE_ENV === 'development' ? 'dev_' : 'online_'
+
 // 云函数入口函数
 
 exports.main = async (event, context) => {
@@ -30,7 +32,7 @@ exports.main = async (event, context) => {
 
 async function addFoodSys(event) {
   const { name = '', desc = '' } = event;
-  return await db.collection('dev_sys').add({
+  return await db.collection(`${DATABASE_ENV}sys`).add({
     data: {
       name,
       desc,
@@ -39,19 +41,16 @@ async function addFoodSys(event) {
 }
 
 async function getFoodSys(event) {
-  return await db.collection('dev_sys').get()
+  return await db.collection(`${DATABASE_ENV}sys`).get()
 }
 
 async function getFoodsBySys(event) {
-  return await db.collection('dev_sys').aggregate()
+  return await db.collection(`${DATABASE_ENV}sys`).aggregate()
     .lookup({
-      from: 'dev_foods',
+      from: `${DATABASE_ENV}foods`,
       localField: 'name',
       foreignField: 'sysName',
       as: 'containFoods',
     })
     .end()
-  // .then(res => console.log(res))
-  // .catch(err => console.error(err))
-  // return await db.collection('dev_foods').where({ sysId: event.sysId || '' }).get()
 }
