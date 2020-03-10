@@ -10,6 +10,8 @@ import {
 
 import Taro, { Component } from "@tarojs/taro";
 
+import { getGlobalData } from "../../utils/globalData";
+
 export default class DetailBanner extends Component {
 
     constructor() {
@@ -18,7 +20,8 @@ export default class DetailBanner extends Component {
             current: 0,
             loading: true,
             sysList: [],
-            currentFoodList: []
+            currentFoodList: [],
+            env: getGlobalData('env') || ''
         }
     }
 
@@ -33,18 +36,20 @@ export default class DetailBanner extends Component {
         const { sysList = [] } = this.state;
         this.setState({
             current,
-            currentFoodList: sysList[current].containFoods || []
+            currentFoodList: sysList[current] && sysList[current].containFoods || []
         })
     }
 
     getFoodsBySys = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         _this.setState({
             loading: true
         })
         wx.cloud.callFunction({
             name: 'foodSys',
-            data: { ...data, action: 'getFoodsBySys' },
+            data: { ...data, action: 'getFoodsBySys', env },
             complete: (res = {}) => {
                 const result = res.result && res.result.list || [];
                 const sysList = result.filter(item => {

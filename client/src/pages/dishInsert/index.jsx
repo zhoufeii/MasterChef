@@ -16,6 +16,7 @@ import {
 import { View } from "@tarojs/components";
 import Taro, { Component } from "@tarojs/taro";
 
+import { getGlobalData } from "../../utils/globalData";
 import {
   cloudUploadImage,
   errorHandler,
@@ -37,7 +38,8 @@ export default class DishInsert extends Component {
             name: '',
             desc: '',
             pics: [],
-            loading: false
+            loading: false,
+            env: getGlobalData('env') || ''
         }
     }
 
@@ -74,9 +76,11 @@ export default class DishInsert extends Component {
 
     addFood = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foods',
-            data: { ...data, action: 'addFood' },
+            data: { ...data, action: 'addFood', env },
         }).then(res => {
             showToast('添加新菜成功', 'success')
             _this.onReset()
@@ -84,18 +88,21 @@ export default class DishInsert extends Component {
     }
 
     getFoods = (data = {}) => {
+        const { env } = this.state;
         wx.cloud.callFunction({
             name: 'foods',
-            data: { ...data, action: 'getFoods' },
+            data: { ...data, action: 'getFoods', env },
             complete: (res = {}) => { }
         })
     }
 
     addFoodSys = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foodSys',
-            data: { ...data, action: 'addFoodSys' },
+            data: { ...data, action: 'addFoodSys', env },
         }).then(res => {
             showToast('添加类别成功', 'success')
             _this.onReset()
@@ -104,9 +111,11 @@ export default class DishInsert extends Component {
 
     getFoodSys = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foodSys',
-            data: { ...data, action: 'getFoodSys' },
+            data: { ...data, action: 'getFoodSys', env },
             complete: (res = {}) => {
                 const result = res.result && res.result.data || [];
                 console.log('callFunction test result: ', result)
