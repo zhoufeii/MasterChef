@@ -59,7 +59,7 @@ export default class DetailBanner extends Component {
                 })
                 _this.setState({
                     sysList,
-                    currentFoodList: sysList[0].containFoods,
+                    currentFoodList: sysList[0] && sysList[0].containFoods || [],
                     loading: false
                 })
             }

@@ -18,6 +18,15 @@ exports.main = async event => {
     case 'addUser': {
       return addUser(event)
     }
+    case 'getUser': {
+      return getUser(event)
+    }
+    case 'updateUser': {
+      return updateUser(event)
+    }
+    // case 'getSecretAndId': {
+    //   return getSecretAndId(event)
+    // }
     default: {
       return;
     }
@@ -33,4 +42,25 @@ exports.main = async event => {
       }
     })
   }
+
+  async function getUser(event) {
+    const { OPENID } = cloud.getWXContext()
+    return await db.collection(`users`).where({
+      open_id: OPENID,
+    }).get()
+  }
+
+  async function updateUser(event) {
+    const { OPENID } = cloud.getWXContext()
+    return await db.collection(`users`).where({
+      open_id: OPENID,
+    }).update({
+      // data 传入需要局部更新的数据
+      data: { ...userInfo }
+    })
+  }
+
+  // async function getSecretAndId(event) {
+  //   return await db.collection(`common`).get()
+  // }
 }

@@ -60,9 +60,10 @@ export default class DishInsert extends Component {
     }
 
     upload = (dir, event, callback) => {
+        const { env } = this.state;
         this.setState({
             loading: true
-        }, cloudUploadImage.bind(this, dir, event, callback))
+        }, cloudUploadImage.bind(this, env, dir, event, callback))
     }
 
     updatePics = (res) => {
@@ -171,6 +172,7 @@ export default class DishInsert extends Component {
     }
 
     onImageClick = (index, file) => {
+        console.log('====onImageClick====')
         console.log(index, file)
     }
 
@@ -262,7 +264,15 @@ export default class DishInsert extends Component {
                             showAddBtn={pics.length < 1}
                             onChange={(event) => {
                                 // this.onItemChange.bind(this, 'pics')
-                                this.upload('foods', event, this.updatePics.bind(this))
+                                console.log('====event====')
+                                console.log(event)
+                                if (event && event.length === 0) {
+                                    this.setState({
+                                        pics: []
+                                    })
+                                } else {
+                                    this.upload('foods', event, this.updatePics.bind(this))
+                                }
                             }}
                             onFail={this.onFail.bind(this)}
                             onImageClick={this.onImageClick.bind(this)}

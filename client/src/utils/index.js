@@ -23,7 +23,7 @@ const showToast = (title = '', icon = '', callback = () => { }) => {
     })
 }
 
-const cloudUploadImage = (dir, event, callback) => {
+const cloudUploadImage = (env, dir, event, callback) => {
     const filePath = event[0].url;
     Taro.getFileSystemManager().readFile({
         filePath, //选择图片返回的相对路径
@@ -33,6 +33,7 @@ const cloudUploadImage = (dir, event, callback) => {
                 name: 'utils',
                 data: {
                     action: 'upload',
+                    env,
                     cloudPath: `${dir}/${Date.now()}_${Math.floor(Math.random() * 100000)}.png`,
                     fileContent: res.data
                 }
@@ -42,6 +43,7 @@ const cloudUploadImage = (dir, event, callback) => {
                     name: 'utils',
                     data: {
                         action: 'exchangeLink',
+                        env,
                         fileList: [fileID]
                     }
                 }).then(res => {
