@@ -8,6 +8,10 @@ import {
   AtTabsPane
 } from "taro-ui";
 
+import {
+  Image,
+  View
+} from "@tarojs/components";
 import Taro, { Component } from "@tarojs/taro";
 
 import { getGlobalData } from "../../utils/globalData";
@@ -90,11 +94,16 @@ export default class DetailBanner extends Component {
                         return <AtTabsPane key={item._id} tabDirection='vertical' current={current} index={index}>
                             {
                                 currentFoodList.length ? currentFoodList.map(foodItem => {
-                                    return <View className='food_item' key={foodItem._id} onClick={() => { }}>
-                                        <AtAvatar size='large' image={foodItem.pics.length && foodItem.pics[0].url || ''} ></AtAvatar>
-                                        <View className='food_info'>
-                                            <View className='food_name'>{foodItem.name}</View>
-                                            <View className='food_desc'>{foodItem.desc}</View>
+                                    return <View className='food_item_wrapper' key={foodItem._id} onClick={() => { }}>
+                                        <View style={{ display: 'flex' }}>
+                                            <AtAvatar size='large' image={foodItem.pics.length && foodItem.pics[0].url || ''} ></AtAvatar>
+                                            <View className='food_item'>
+                                                <View className='food_name'>{foodItem.name}</View>
+                                                <View className='food_desc'>{foodItem.desc}</View>
+                                            </View>
+                                        </View>
+                                        <View className='food_add_icon'>
+                                            <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/add.png' />
                                         </View>
                                     </View>
                                 }) : <View style='font-size:18px;text-align:center;height:200px;'>还没有菜品嗷</View>
