@@ -1,0 +1,36 @@
+.sys_wrapper {
+    width: 55%;
+    height: 85vh;
+    position: relative;
+}
+
+.sys_item {
+    display: flex;
+    // justify-content: space-between;
+    align-items: center;
+
+    font-size: 32px;
+    // border: 1px solid black;
+    text-align: center;
+
+    .sys_item_name {
+        width: 93%;
+        padding: 20px 0;
+    }
+}
+
+.active_item {
+    width: 8px;
+    height: 55px;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    // transform: translateY(0px);
+    transition: .2s linear;
+    background-color: #6190E8;
+    border-radius: 30px;
+}
+
+.element::-webkit-scrollbar {
+    width: 0 !important
+}

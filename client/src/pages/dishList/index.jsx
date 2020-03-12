@@ -3,8 +3,8 @@ import "./index.less";
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
-import DetailBanner from "../../components/detailBanner";
-import DetailList from "../../components/DetailList";
+import Banner from "../../components/banner";
+import Menu from "../../components/menu";
 
 export default class List extends Component {
 
@@ -25,8 +25,8 @@ export default class List extends Component {
   render() {
     return (
       <View>
-        <DetailBanner />
-        <DetailList />
+        <Banner />
+        <Menu />
       </View>
     )
   }
