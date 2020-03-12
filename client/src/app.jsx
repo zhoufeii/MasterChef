@@ -4,24 +4,20 @@ import "taro-ui/dist/style/index.scss";
 import Taro, { Component } from "@tarojs/taro";
 
 import Index from "./pages/index";
-
-// 如果需要在 h5 环境中开启 React Devtools
-// 取消以下注释：
-// if (process.env.NODE_ENV !== 'production' && process.env.TARO_ENV === 'h5')  {
-//   require('nerv-devtools')
-// }
+import { setGlobalData } from "./utils/globalData";
 
 class App extends Component {
 
   componentDidMount() {
+    const env = 'dev-uel3w' || 'online-p5ijz';
     if (process.env.TARO_ENV === 'weapp') {
-      console.log('=====process.env.NODE_ENV===')
-      console.log(process.env.NODE_ENV)
+      console.log(`process.env.NODE_ENV: ${env}`)
       Taro.cloud.init({
-        env: process.env.NODE_ENV,
+        env,
         traceUser: true
       })
     }
+    setGlobalData("env", env)  //全局变量  online-p5ijz
   }
 
   componentDidShow() { }
@@ -35,7 +31,7 @@ class App extends Component {
       'pages/index/index',
       'pages/dishList/index',
       'pages/dishInsert/index',
-
+      'pages/login/index',
     ],
     window: {
       backgroundTextStyle: 'light',

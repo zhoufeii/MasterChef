@@ -1,6 +1,7 @@
 import "./index.less";
 
 import {
+  AtActivityIndicator,
   AtButton,
   AtFloatLayout,
   AtForm,
@@ -15,6 +16,7 @@ import {
 import { View } from "@tarojs/components";
 import Taro, { Component } from "@tarojs/taro";
 
+import { getGlobalData } from "../../utils/globalData";
 import {
   cloudUploadImage,
   errorHandler,
@@ -35,7 +37,9 @@ export default class DishInsert extends Component {
             sysDesc: '',
             name: '',
             desc: '',
-            pics: []
+            pics: [],
+            loading: false,
+            env: getGlobalData('env') || ''
         }
     }
 
@@ -55,47 +59,51 @@ export default class DishInsert extends Component {
         navigationBarTitleText: '添加类别/新菜'
     }
 
+    upload = (dir, event, callback) => {
+        const { env } = this.state;
+        this.setState({
+            loading: true
+        }, cloudUploadImage.bind(this, env, dir, event, callback))
+    }
+
     updatePics = (res) => {
-        console.log('====updatePics===')
-        console.log(res)
         const fileList = res.result && res.result.fileList || [];
         const url = fileList.length && fileList[0] && fileList[0].tempFileURL || ''
         this.setState({
-            pics: [{ url }]
+            pics: [{ url }],
+            loading: false
         })
-    }
-
-    upload = (dir, event, callback) => {
-        cloudUploadImage(dir, event, callback)
     }
 
     addFood = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foods',
-            data: { ...data, action: 'addFood' },
+            data: { ...data, action: 'addFood', env },
         }).then(res => {
-            console.log('callFunction test result: ', res)
             showToast('添加新菜成功', 'success')
             _this.onReset()
         }).catch(errorHandler)
     }
 
     getFoods = (data = {}) => {
+        const { env } = this.state;
         wx.cloud.callFunction({
             name: 'foods',
-            data: { ...data, action: 'getFoods' },
-            complete: (res = {}) => {
-                console.log('callFunction test result: ', res)
-            }
+            data: { ...data, action: 'getFoods', env },
+            complete: (res = {}) => { }
         })
     }
 
     addFoodSys = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foodSys',
-            data: { ...data, action: 'addFoodSys' },
+            data: { ...data, action: 'addFoodSys', env },
         }).then(res => {
             showToast('添加类别成功', 'success')
             _this.onReset()
@@ -104,9 +112,11 @@ export default class DishInsert extends Component {
 
     getFoodSys = (data = {}) => {
         const _this = this;
+        const { env } = _this.state;
+
         wx.cloud.callFunction({
             name: 'foodSys',
-            data: { ...data, action: 'getFoodSys' },
+            data: { ...data, action: 'getFoodSys', env },
             complete: (res = {}) => {
                 const result = res.result && res.result.data || [];
                 console.log('callFunction test result: ', result)
@@ -155,15 +165,14 @@ export default class DishInsert extends Component {
         if (message.errMsg === 'chooseImage:fail cancel') {
             return;
         }
-        console.log(message)
-        // Taro.atMessage({
-        //     message: message.errMsg,
-        //     type: 'fail',
-        // })
+        Taro.atMessage({
+            message: message || message.errMsg,
+            type: 'fail',
+        })
     }
 
     onImageClick = (index, file) => {
-
+        console.log('====onImageClick====')
         console.log(index, file)
     }
 
@@ -184,7 +193,10 @@ export default class DishInsert extends Component {
             showToast('所属分类不可为空~');
             return;
         }
-        this.addFood(data)
+
+        this.setState({
+            loading: true
+        }, this.addFood.bind(this, data))
     }
 
     onSysSubmit = () => {
@@ -207,7 +219,8 @@ export default class DishInsert extends Component {
             sysId: '',
             name: '',
             desc: '',
-            pics: []
+            pics: [],
+            loading: false
         })
     }
 
@@ -219,11 +232,13 @@ export default class DishInsert extends Component {
     }
 
     render() {
-        const { isOpened = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
+        const { isOpened = false, loading = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
             <View >
                 <AtMessage />
-
+                {
+                    loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
+                }
                 {
                     type === 'dish' ? <AtForm
                         onSubmit={this.onDishSubmit.bind(this)}
@@ -249,7 +264,15 @@ export default class DishInsert extends Component {
                             showAddBtn={pics.length < 1}
                             onChange={(event) => {
                                 // this.onItemChange.bind(this, 'pics')
-                                this.upload('foods', event, this.updatePics.bind(this))
+                                console.log('====event====')
+                                console.log(event)
+                                if (event && event.length === 0) {
+                                    this.setState({
+                                        pics: []
+                                    })
+                                } else {
+                                    this.upload('foods', event, this.updatePics.bind(this))
+                                }
                             }}
                             onFail={this.onFail.bind(this)}
                             onImageClick={this.onImageClick.bind(this)}
@@ -296,7 +319,6 @@ export default class DishInsert extends Component {
                         options={sysList}
                         value={sysId}
                         onClick={(ev) => {
-                            console.log(ev)
                             this.onItemChange('sysId', ev)
                             this.onToggleIsOpen()
                         }}

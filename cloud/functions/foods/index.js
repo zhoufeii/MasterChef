@@ -1,16 +1,18 @@
 // 云函数入口文件
-const cloud = require("wx-server-sdk");
-cloud.init({
-    env: cloud.DYNAMIC_CURRENT_ENV
-});
-const db = cloud.database()
-// 云函数入口函数
+const cloud = require('wx-server-sdk')
 
-exports.main = async (event, context) => {
-    const { action = '' } = event;
+exports.main = async event => {
+    const { action = '', env = '' } = event;
+
+    if (!env) {
+        throw new Error('环境ID为空！')
+    }
     if (!action) {
         throw new Error('请传入action标识操作！')
     }
+
+    cloud.init({ env })
+    const db = cloud.database({ env })
 
     switch (event.action) {
         case 'addFood': {
@@ -23,21 +25,21 @@ exports.main = async (event, context) => {
             return
         }
     }
-}
 
-async function addFood(event) {
-    const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = event;
-    return await db.collection('dev_foods').add({
-        data: {
-            name,
-            desc,
-            sysName,
-            sysId,
-            pics
-        }
-    })
-}
+    async function addFood(event) {
+        const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = event;
+        return await db.collection(`foods`).add({
+            data: {
+                name,
+                desc,
+                sysName,
+                sysId,
+                pics
+            }
+        })
+    }
 
-async function getFoods(event) {
-    return await db.collection('dev_foods').get()
+    async function getFoods(event) {
+        return await db.collection(`foods`).get()
+    }
 }
