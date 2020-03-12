@@ -65,6 +65,8 @@ export default class DetailBanner extends Component {
         setTimeout(() => {
             this.setState({
                 ballStyle: {
+                    width: '20px',
+                    height: '20px',
                     top: `92vh`,
                     left: `60px`,
                     transition: `left .4s linear, top .4s ease-in`
@@ -191,15 +193,15 @@ export default class DetailBanner extends Component {
                     upperThreshold={Threshold}
                     onScrollToLower={this.onScrollToLower.bind(this)} // 使用箭头函数的时候 可以这样写 `onScrollToUpper={this.onScrollToUpper}`
                 >
-                    <View style={{ borderRight: '2px solid #f0f0f0' }}>
+                    <View>
                         {
                             sysList.map((item, index) => {
-                                return <View className='sys_item' key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
-                                    <View className='sys_item_name'>{item.name}</View>
+                                return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
+                                    <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#000', fontWeight: '400' }}>{item.name}</View>
+                                    {/* <View className='active_item' style={current === index ? { opacity: 1 } : { opacity: 0 }}></View> */}
                                 </View>
                             })
                         }
-                        <View className='active_item' style={{ transform: `translateY(${current * 42 + 8}px)`, transition: `.2s linear` }}></View>
                     </View>
                 </ScrollView>
                 <ScrollView
@@ -214,7 +216,6 @@ export default class DetailBanner extends Component {
                     <FoodList list={currentFoodList} onFoodItemAdd={this.onFoodItemAdd} onFoodItemMinus={this.onFoodItemMinus} />
                 </ScrollView>
             </View>
-
             <CartAndPay count={0} />
         </View>
     }
