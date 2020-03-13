@@ -29,8 +29,8 @@ class App extends Component {
   config = {
     pages: [
       'pages/index/index',
-      'pages/dishList/index',
-      'pages/dishInsert/index',
+      'pages/list/index',
+      'pages/add/index',
       'pages/login/index',
     ],
     window: {
