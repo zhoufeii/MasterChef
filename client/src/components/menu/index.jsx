@@ -35,44 +35,46 @@ export default class DetailBanner extends Component {
 
     onFoodItemAdd = (item = {}, event) => {
         const { x, y } = event.detail;
-        const { currentFoodList = [], animating = false } = this.state;
+        const { currentFoodList = [], animating = false, } = this.state;
+        let { orderList = [] } = this.state;
         if (animating) return;
         const { _id = '' } = item;
-        // const hasOrder = currentFoodList.some(item => item._id === _id && item.count)
-        // if (hasOrder) {
-        //     Taro.showToast({
-        //         title: '已经点过这个菜啦~',
-        //         icon: ''
-        //     })
-        //     return;
-        // } else {
-        this.setState({
-            currentFoodList: currentFoodList.map(item => {
+        const currentFood = currentFoodList.filter(item => item._id === _id)[0];
+        const hasOrder = orderList.some(item => item._id === _id)
+        if (hasOrder) {
+            // 点过这个菜了
+            orderList = orderList.map(item => {
                 if (item._id === _id) {
-                    return { ...item, count: item.count ? item.count + 1 : 1 }
+                    return { ...item, count: item.count + 1 }
                 } else {
                     return item
                 }
-            }),
+            })
+        } else {
+            orderList = [...orderList, { ...currentFood, count: 1 }]
+        }
+        this.setState({
             ballStyle: {
                 top: `${y}px`,
                 left: `${x}px`,
                 transition: `left 0s, top 0s`
             },
-            animating: true
+            orderList,
+            animating: true,
+        }, () => {
+            setTimeout(() => {
+                this.setState({
+                    ballStyle: {
+                        width: '20px',
+                        height: '20px',
+                        top: `92vh`,
+                        left: `60px`,
+                        transition: `left .4s linear, top .4s ease-in`
+                    },
+                    count: orderList.filter(item => item.count).reduce((x, y) => { return x + y.count }, 0)
+                })
+            }, 20)
         })
-
-        setTimeout(() => {
-            this.setState({
-                ballStyle: {
-                    width: '20px',
-                    height: '20px',
-                    top: `92vh`,
-                    left: `60px`,
-                    transition: `left .4s linear, top .4s ease-in`
-                }
-            })
-        }, 20)
 
         setTimeout(() => {
             this.setState({
@@ -83,16 +85,31 @@ export default class DetailBanner extends Component {
     }
 
     onFoodItemMinus = (item = {}) => {
-        const { currentFoodList = [] } = this.state;
+        let { orderList = [] } = this.state;
         const { _id = '' } = item;
+        const orderedItem = orderList.filter(item => item._id === _id)[0];
+        if (orderedItem.count > 1) {
+            orderedItem.count--;
+        } else {
+            orderedItem.count = 0
+        }
+        orderList = orderList.filter(item => {
+            return item.count
+        })
         this.setState({
-            currentFoodList: currentFoodList.map(item => {
-                if (item._id === _id) {
-                    return { ...item, count: item.count - 1 }
-                } else {
-                    return item
-                }
-            }),
+            orderList
+        }, () => {
+            const { orderList = [] } = this.state;
+            this.setState({
+                count: orderList.filter(item => item.count).reduce((x, y) => { return x + y.count }, 0)
+            })
+        })
+    }
+
+    onClear = () => {
+        this.setState({
+            orderList: [],
+            count: 0
         })
     }
 
@@ -130,16 +147,8 @@ export default class DetailBanner extends Component {
         console.log(e)
     }
 
-    // or 使用箭头函数
-    // onScrollToUpper = () => {}
-
-    onScroll = (e) => {
-        console.log(e.detail)
-    }
-
     render() {
-        const { current = 0, loading, sysList = [], currentFoodList = [], ballStyle = {}, } = this.state;
-        console.log(currentFoodList)
+        const { current = 0, count = 0, loading = false, sysList = [], currentFoodList = [], orderList = [], ballStyle = {}, } = this.state;
         const scrollTop = 0
         const Threshold = 20
 
@@ -148,40 +157,7 @@ export default class DetailBanner extends Component {
             {
                 loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
             }
-            <AtToast isOpened text="{text}" icon="{icon}"></AtToast>
 
-            {/* <AtTabs
-                current={current}
-                height='100vh'
-                tabDirection='vertical'
-                tabList={sysList}
-                onClick={this.onToggleCurrent.bind(this)}>
-                {
-                    sysList.map((item, index) => {
-                        return <AtTabsPane key={item._id} tabDirection='vertical' current={current} index={index}>
-                            <FoodList list={currentFoodList} onFoodItemAdd={this.onFoodItemAdd} onFoodItemMinus={this.onFoodItemMinus} />
-                        </AtTabsPane>
-                    })
-                }
-            </AtTabs> */}
-            {/* <Swiper
-                vertical
-                circular
-                indicatorDots={false}
-                easingFunction='linear'
-                style={{ height: '300px' }}
-            >
-                <SwiperItem>
-                    <View style={{ background: "red", height: '300px' }} className='demo-text-1'>1</View>
-                </SwiperItem>
-                <SwiperItem>
-                    <View style={{ background: "green", height: '300px' }} className='demo-text-2'>2</View>
-                </SwiperItem>
-                <SwiperItem>
-                    <View style={{ background: "blue", height: '300px' }} className='demo-text-3'>3</View>
-                </SwiperItem>
-            </Swiper> */}
-            {/* <FoodList list={currentFoodList} onFoodItemAdd={this.onFoodItemAdd} onFoodItemMinus={this.onFoodItemMinus} /> */}
             <View style={{ display: 'flex' }}>
                 <ScrollView
                     className='sys_wrapper'
@@ -198,7 +174,6 @@ export default class DetailBanner extends Component {
                             sysList.map((item, index) => {
                                 return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
                                     <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#000', fontWeight: '400' }}>{item.name}</View>
-                                    {/* <View className='active_item' style={current === index ? { opacity: 1 } : { opacity: 0 }}></View> */}
                                 </View>
                             })
                         }
@@ -213,10 +188,21 @@ export default class DetailBanner extends Component {
                     upperThreshold={Threshold}
                     onScrollToLower={this.onScrollToLower.bind(this)} // 使用箭头函数的时候 可以这样写 `onScrollToUpper={this.onScrollToUpper}`
                 >
-                    <FoodList list={currentFoodList} onFoodItemAdd={this.onFoodItemAdd} onFoodItemMinus={this.onFoodItemMinus} />
+                    <FoodList
+                        list={currentFoodList}
+                        orderList={orderList}
+                        onFoodItemAdd={this.onFoodItemAdd}
+                        onFoodItemMinus={this.onFoodItemMinus}
+                    />
                 </ScrollView>
             </View>
-            <CartAndPay count={0} />
+            <CartAndPay
+                count={count}
+                orderList={orderList}
+                onFoodItemAdd={this.onFoodItemAdd}
+                onFoodItemMinus={this.onFoodItemMinus}
+                onClear={this.onClear}
+            />
         </View>
     }
 }

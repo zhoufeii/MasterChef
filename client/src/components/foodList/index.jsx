@@ -13,10 +13,13 @@ export default class FoodList extends Component {
         super(props)
     }
     render() {
-        const { list = [], onFoodItemAdd = () => { }, onFoodItemMinus = () => { } } = this.props;
+        const { list = [], orderList = [], onFoodItemAdd = () => { }, onFoodItemMinus = () => { } } = this.props;
+        console.log(this.props);
         return <View>
             {
                 list.map(item => {
+                    const itemArray = orderList.filter(orderItem => orderItem._id === item._id);
+                    const count = itemArray.length && itemArray[0].count
                     return <View className='food_item_wrapper' key={item._id} >
                         <View style={{ display: 'flex' }}>
                             <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
@@ -27,11 +30,11 @@ export default class FoodList extends Component {
                         </View>
                         <View className='food_num_icon_wrapper' >
                             {
-                                item.count ? <Image onClick={onFoodItemMinus.bind(this, item)} className='food_count_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/minus.png' /> : null
+                                count ? <Image onClick={onFoodItemMinus.bind(this, item)} className='food_count_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/minus.png' /> : null
                             }
 
                             {
-                                item.count ? <Text>{item.count}</Text> : null
+                                count ? <Text>{count}</Text> : null
                             }
 
                             <Image onClick={onFoodItemAdd.bind(this, item)} className='food_count_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/add.png' />
