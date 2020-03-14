@@ -152,13 +152,13 @@ export default class DetailBanner extends Component {
         const scrollTop = 0
         const Threshold = 20
 
-        return <View>
+        return <View className='menu_wrapper' >
             <Ball ballStyle={ballStyle} />
             {
                 loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
             }
 
-            <View style={{ display: 'flex' }}>
+            <View id='menu_inner' className='menu_inner' style={{ display: 'flex' }}>
                 <ScrollView
                     className='sys_wrapper'
                     scrollY
@@ -169,15 +169,13 @@ export default class DetailBanner extends Component {
                     upperThreshold={Threshold}
                     onScrollToLower={this.onScrollToLower.bind(this)} // 使用箭头函数的时候 可以这样写 `onScrollToUpper={this.onScrollToUpper}`
                 >
-                    <View>
-                        {
-                            sysList.map((item, index) => {
-                                return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
-                                    <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#000', fontWeight: '400' }}>{item.name}</View>
-                                </View>
-                            })
-                        }
-                    </View>
+                    {
+                        sysList.map((item, index) => {
+                            return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
+                                <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#000', fontWeight: '400' }}>{item.name}</View>
+                            </View>
+                        })
+                    }
                 </ScrollView>
                 <ScrollView
                     className='foods_wrapper'

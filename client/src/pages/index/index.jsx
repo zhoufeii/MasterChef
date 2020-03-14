@@ -82,8 +82,6 @@ export default class Index extends Component {
               env
             }
           }).then(res => {
-            console.log('=====res====');
-            console.log(res)
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
               Taro.cloud.callFunction({
@@ -123,9 +121,7 @@ export default class Index extends Component {
     const _this = this;
     Taro.getUserInfo({
       success(res) {
-        console.log(res)
         const { userInfo = {}, } = res;
-        //  encryptedData = '', signature = '', iv = '' 
         _this.setState({
           hasAuth: true,
           userInfo,
@@ -171,7 +167,6 @@ export default class Index extends Component {
         userInfo
       }
     }).then(res => {
-      console.log('update ok')
       // const userList = res.result && res.result.data || [];
       // if (userList.length) {
       _this.getUser()

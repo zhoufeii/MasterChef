@@ -14,7 +14,6 @@ export default class FoodList extends Component {
     }
     render() {
         const { list = [], orderList = [], onFoodItemAdd = () => { }, onFoodItemMinus = () => { } } = this.props;
-        console.log(this.props);
         return <View>
             {
                 list.map(item => {

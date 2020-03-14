@@ -18,8 +18,15 @@ export default class List extends Component {
 
   componentDidHide() { }
 
+  onPageScroll(ev) {
+    console.log(ev)
+    Taro.createSelectorQuery().selectViewport().scrollOffset().exec((res) => {
+      console.log(res[0])
+    })
+  }
+
   config = {
-    navigationBarTitleText: '列表'
+    navigationBarTitleText: '熊家菜单'
   }
 
   render() {
