@@ -119,7 +119,6 @@ export default class DishInsert extends Component {
             data: { ...data, action: 'getFoodSys', env },
             complete: (res = {}) => {
                 const result = res.result && res.result.data || [];
-                console.log('callFunction test result: ', result)
                 _this.setState({
                     sysList: result.map(item => {
                         return { ...item, label: item.name, desc: item.desc, value: item._id }
@@ -172,8 +171,7 @@ export default class DishInsert extends Component {
     }
 
     onImageClick = (index, file) => {
-        console.log('====onImageClick====')
-        console.log(index, file)
+
     }
 
     onDishSubmit = () => {
@@ -234,7 +232,7 @@ export default class DishInsert extends Component {
     render() {
         const { isOpened = false, loading = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
-            <View >
+            <View className='add'>
                 <AtMessage />
                 {
                     loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
@@ -263,9 +261,6 @@ export default class DishInsert extends Component {
                             files={pics}
                             showAddBtn={pics.length < 1}
                             onChange={(event) => {
-                                // this.onItemChange.bind(this, 'pics')
-                                console.log('====event====')
-                                console.log(event)
                                 if (event && event.length === 0) {
                                     this.setState({
                                         pics: []

@@ -2,17 +2,16 @@ import "./index.less";
 
 import {
   AtActivityIndicator,
-  AtAvatar,
   AtGrid
 } from "taro-ui";
 
 import {
   Button,
-  Text,
   View
 } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Banner from "../../components/banner";
 import { getGlobalData } from "../../utils/globalData";
 
 export default class Index extends Component {
@@ -82,8 +81,6 @@ export default class Index extends Component {
               env
             }
           }).then(res => {
-            console.log('=====res====');
-            console.log(res)
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
               Taro.cloud.callFunction({
@@ -123,9 +120,7 @@ export default class Index extends Component {
     const _this = this;
     Taro.getUserInfo({
       success(res) {
-        console.log(res)
         const { userInfo = {}, } = res;
-        //  encryptedData = '', signature = '', iv = '' 
         _this.setState({
           hasAuth: true,
           userInfo,
@@ -171,7 +166,6 @@ export default class Index extends Component {
         userInfo
       }
     }).then(res => {
-      console.log('update ok')
       // const userList = res.result && res.result.data || [];
       // if (userList.length) {
       _this.getUser()
@@ -190,15 +184,18 @@ export default class Index extends Component {
     const { userInfo = {}, hasAuth = false, loading = true, } = this.state;
     return (
       <View className='index'>
-        {
-          loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
-        }
+        <Banner />
+        <View className='loading_wrapper'>
+          {
+            loading ? <AtActivityIndicator content='加载中...' ></AtActivityIndicator> : null
+          }
+        </View>
         {
           !loading && !hasAuth ? <Button className='login_btn' open-type="getUserInfo" onGetUserInfo={this.buttonGetUserInfo} >使用微信登录</Button> : null
         }
         {
           userInfo.userType ? <View>
-            <View className='user_info_container'>
+            {/* <View className='user_info_container'>
               <View className='user_info_item'>
                 {
                   userInfo.avatarUrl ? <AtAvatar image={userInfo.avatarUrl}></AtAvatar> : null
@@ -209,7 +206,7 @@ export default class Index extends Component {
                   userInfo.nickName ? <Text>你好，{userInfo.nickName}</Text> : null
                 }
               </View>
-            </View>
+            </View> */}
             <AtGrid onClick={item => {
               this.navigateTo(item.url)
             }} data={
@@ -217,7 +214,7 @@ export default class Index extends Component {
                 {
                   image: 'https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png',
                   value: '我要点菜',
-                  url: '/pages/list/index'
+                  url: '/pages/menu/index'
                 },
                 {
                   image: 'https://img20.360buyimg.com/jdphoto/s72x72_jfs/t15151/308/1012305375/2300/536ee6ef/5a411466N040a074b.png',
