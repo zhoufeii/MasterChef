@@ -232,7 +232,7 @@ export default class DishInsert extends Component {
     render() {
         const { isOpened = false, loading = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
-            <View >
+            <View className='add'>
                 <AtMessage />
                 {
                     loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null

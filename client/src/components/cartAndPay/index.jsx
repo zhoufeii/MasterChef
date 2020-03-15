@@ -24,6 +24,18 @@ export default class Ball extends Component {
         })
     }
 
+    navigateTo = (url) => {
+        const { orderList = [] } = this.props;
+        try {
+            Taro.setStorageSync('ORDER_LIST', JSON.stringify(orderList))
+            Taro.navigateTo({
+                url,
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     render() {
         const { count = 10, orderList = [], onFoodItemMinus = () => { }, onFoodItemAdd = () => { }, onClear = () => { } } = this.props;
         const { showModal = false } = this.state;
@@ -38,7 +50,7 @@ export default class Ball extends Component {
                             <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/rabbit.png' />
                         </View>
                 }
-                <View className='pay_btn'>去结算</View>
+                <View className='pay_btn' onClick={this.navigateTo.bind(this, '/pages/confirm/index')}>去结算</View>
             </View>
             <AtFloatLayout isOpened={showModal} title="兔兔的点菜单" onClose={this.toggleModal}>
                 {
