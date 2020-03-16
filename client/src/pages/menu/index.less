@@ -15,17 +15,26 @@
 
 .sys_item {
     display: flex;
-    // justify-content: space-between;
     align-items: center;
-
     font-size: 30px;
-    // border: 1px solid black;
     text-align: center;
 
     .sys_item_name {
         width: 93%;
         padding: 20px 0;
+        background: #f0f0f0;
+        color: #6A6A6A;
     }
+
+    .sys_item_name.active {
+        background: #6190E8;
+        color: #fff;
+    }
+}
+
+.sys_item.active {
+    background: #6190E8;
+    color: #fff;
 }
 
 .active_item {

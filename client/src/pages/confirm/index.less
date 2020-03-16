@@ -43,6 +43,8 @@
         .confirm_date_label {}
 
         .confirm_date {
+            display: flex;
+            align-items: center;
 
             .right_arrow {
                 width: 60px;
@@ -63,13 +65,38 @@
     border-radius: 20px;
     padding: 20px;
     box-shadow: 5rpx 5rpx 10rpx 5rpx #f0f0f0;
+
+    .confirm_coupon_wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px solid #f0f0f0;
+
+        .confirm_coupon_label {}
+
+        .confirm_coupon {
+            display: flex;
+            align-items: center;
+
+            .right_arrow {
+                width: 60px;
+                height: 60px;
+                font-size: 0;
+
+                image {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+    }
 }
 
 .item_wrapper {
     display: flex;
     justify-content: space-between;
-    // padding: 0 10px;
-    margin-bottom: 20px;
+    padding-bottom: 20px;
 
     .item_info {
         display: flex;
@@ -121,9 +148,9 @@
             }
 
             .date_item.active {
-                color: #6190E8;
+                background: #6190E8;
+                color: #fff;
                 font-weight: bold;
-                background: #fff;
             }
         }
     }
@@ -143,8 +170,9 @@
 
             }
 
-            .date_item.active {
-                color: #6190E8;
+            .time_item.active {
+                background: #6190E8;
+                color: #fff;
                 font-weight: bold;
             }
         }

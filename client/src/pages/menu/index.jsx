@@ -175,8 +175,8 @@ export default class DetailBanner extends Component {
         >
           {
             sysList.map((item, index) => {
-              return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
-                <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#6A6A6A', fontWeight: '400' }}>{item.name}</View>
+              return <View className={current === index ? 'sys_item active' : 'sys_item'} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
+                <View className={current === index ? 'sys_item_name active' : 'sys_item_name'}>{item.name}</View>
               </View>
             })
           }
