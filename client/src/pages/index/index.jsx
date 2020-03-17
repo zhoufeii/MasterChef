@@ -81,6 +81,8 @@ export default class Index extends Component {
               env
             }
           }).then(res => {
+            console.log(res)
+            // const storageUserId = res && res.result && res.result.data && res.result.data[0] && res.result.data[0]._id || '';
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
               Taro.cloud.callFunction({
@@ -104,6 +106,12 @@ export default class Index extends Component {
                 userInfo: userList[0],
               })
             }
+
+            // try {
+            //   Taro.setStorageSync('USER_ID', storageUserId)
+            // } catch (e) {
+            //   console.log(e)
+            // }
 
           }).catch(err => {
             console.log(err)

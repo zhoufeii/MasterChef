@@ -33,6 +33,7 @@ class App extends Component {
       'pages/add/index',
       'pages/login/index',
       'pages/confirm/index',
+      'pages/success/index'
     ],
     window: {
       backgroundTextStyle: 'light',

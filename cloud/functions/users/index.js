@@ -52,6 +52,7 @@ exports.main = async event => {
 
   async function updateUser(event) {
     const { OPENID } = cloud.getWXContext()
+    const { userInfo = {} } = event;
     return await db.collection(`users`).where({
       open_id: OPENID,
     }).update({

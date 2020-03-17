@@ -9,6 +9,7 @@ import Ball from "../../components/ball";
 import CartAndPay from "../../components/cartAndPay";
 import FoodList from "../../components/foodList";
 import { getGlobalData } from "../../utils/globalData";
+import { showToast } from "../../utils/index";
 
 export default class DetailBanner extends Component {
 
@@ -34,6 +35,7 @@ export default class DetailBanner extends Component {
   }
 
   onFoodItemAdd = (item = {}, event) => {
+
     const { x, y } = event.detail;
     const { currentFoodList = [], animating = false, } = this.state;
     let { orderList = [] } = this.state;
@@ -41,6 +43,12 @@ export default class DetailBanner extends Component {
     const { _id = '' } = item;
     const currentFood = currentFoodList.filter(item => item._id === _id)[0];
     const hasOrder = orderList.some(item => item._id === _id)
+    const currentOrderFood = orderList.filter(item => item._id === _id)
+    console.log(currentOrderFood)
+    if (currentOrderFood && currentOrderFood[0] && currentOrderFood[0].count > 2) {
+      showToast('好吃也不能点太多啦~');
+      return;
+    }
     if (hasOrder) {
       // 点过这个菜了
       orderList = orderList.map(item => {
@@ -120,7 +128,7 @@ export default class DetailBanner extends Component {
     _this.setState({
       loading: true
     })
-    wx.cloud.callFunction({
+    Taro.cloud.callFunction({
       name: 'foodSys',
       data: { ...data, action: 'getFoodsBySys', env },
       complete: (res = {}) => {
@@ -175,8 +183,8 @@ export default class DetailBanner extends Component {
         >
           {
             sysList.map((item, index) => {
-              return <View className='sys_item' style={current === index ? { background: '#fff' } : { background: '#f0f0f0' }} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
-                <View className='sys_item_name' style={current === index ? { color: '#6190E8', fontWeight: 'bold' } : { color: '#6A6A6A', fontWeight: '400' }}>{item.name}</View>
+              return <View className={current === index ? 'sys_item active' : 'sys_item'} key={item._id} onClick={this.onToggleCurrent.bind(this, index)}>
+                <View className={current === index ? 'sys_item_name active' : 'sys_item_name'}>{item.name}</View>
               </View>
             })
           }
