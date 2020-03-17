@@ -128,7 +128,7 @@ export default class DetailBanner extends Component {
     _this.setState({
       loading: true
     })
-    wx.cloud.callFunction({
+    Taro.cloud.callFunction({
       name: 'foodSys',
       data: { ...data, action: 'getFoodsBySys', env },
       complete: (res = {}) => {

@@ -1,16 +1,38 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
-cloud.init()
+exports.main = async event => {
+  const { action = '', env = '' } = event;
 
-// 云函数入口函数
-exports.main = async (event, context) => {
-  const wxContext = cloud.getWXContext()
+  if (!action) {
+    throw new Error('请传入action标识操作！')
+  }
+  if (!env) {
+    throw new Error('环境ID为空！')
+  }
 
-  return {
-    event,
-    openid: wxContext.OPENID,
-    appid: wxContext.APPID,
-    unionid: wxContext.UNIONID,
+  cloud.init({ env })
+  const db = cloud.database({ env })
+
+  switch (event.action) {
+    case 'addOrder': {
+      return addOrder(event)
+    }
+    default: {
+      return
+    }
+  }
+
+  async function addOrder(event) {
+    const { selectDate = '', list = [] } = event;
+    const { OPENID } = cloud.getWXContext()
+
+    return await db.collection(`orders`).add({
+      data: {
+        userId: OPENID,
+        createTime: selectDate,
+        list
+      }
+    })
   }
 }

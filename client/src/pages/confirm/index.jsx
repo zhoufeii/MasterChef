@@ -9,11 +9,17 @@ import {
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import { getGlobalData } from "../../utils/globalData";
 import { showToast } from "../../utils/index";
 
 function format(date) {
     return date.format('YYYY-MM-DD')
 }
+
+function formatTime(date) {
+    return date.format('YYYY-MM-DD HH:mm:ss')
+}
+
 const CALENDAR_LOCALE = {
     sameDay: '[今天]',
     nextDay: '[明天]',
@@ -37,6 +43,8 @@ export default class Index extends Component {
     constructor() {
         super();
         this.state = {
+            env: getGlobalData('env') || '',
+            orderList: [],
             deliverDate: 0,
             deliverTime: '',
             showModal: false,
@@ -142,10 +150,6 @@ export default class Index extends Component {
         })
     }
 
-    selectDate = (e) => {
-        console.log(e)
-    }
-
     setDate = (item = {}) => {
         this.setState({
             deliverDate: item.id
@@ -176,9 +180,30 @@ export default class Index extends Component {
     }
 
     confirmOrder = () => {
-        const { selectCoupon = false, selectDate = '' } = this.state;
+        const _this = this;
+        const { selectCoupon = false, selectDate = '', orderList = [], env } = _this.state;
+
+        const list = orderList.map(item => {
+            return {
+                id: item._id,
+                count: item.count
+            }
+        })
+        const data = {
+            selectDate: selectDate || formatTime(moment()),
+            list,
+        }
+        console.log({ ...data, action: 'addOrder', env })
         if (selectCoupon) {
-            this.redirectTo(`/pages/success/index?type=${selectDate ? 1 : 2}`)  // type: [1: 立即送出] [2: 预定单]
+            Taro.cloud.callFunction({
+                name: 'orders',
+                data: { ...data, action: 'addOrder', env },
+            }).then(res => {
+                const orderId = res && res.result && res.result._id || '';
+                this.redirectTo(`/pages/success/index?type=${selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
+            }).catch(err => {
+                showToast('下单失败，请联系大熊！')
+            })
         } else {
             showToast('快让爱你的人给你做好吃的吧！')
         }
@@ -274,9 +299,6 @@ export default class Index extends Component {
                             >
                                 {
                                     timeList[deliverDate] && timeList[deliverDate].map((item) => {
-                                        console.log('=====item====')
-                                        console.log(deliverTime)
-                                        console.log(item.id)
                                         return <View
                                             key={item.id}
                                             className={deliverTime === item.id ? `time_item active` : `time_item`}
