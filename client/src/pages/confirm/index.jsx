@@ -9,6 +9,8 @@ import {
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import { showToast } from "../../utils/index";
+
 function format(date) {
     return date.format('YYYY-MM-DD')
 }
@@ -40,6 +42,7 @@ export default class Index extends Component {
             showModal: false,
             selectCoupon: false,
             showCouponModal: false,
+            price: 0,
         }
     }
 
@@ -82,6 +85,7 @@ export default class Index extends Component {
                 })
             })
         }
+
         dateList = dateList.map(item => {
             return WEEK_LOCALE[item.date] ? { ...item, date: WEEK_LOCALE[item.date] } : item
         })
@@ -90,7 +94,9 @@ export default class Index extends Component {
             key: 'ORDER_LIST',
             success(res) {
                 orderList = JSON.parse(res.data)
+                let price = (orderList.length || 0) * 99999
                 _this.setState({
+                    price,
                     orderList,
                     dateList,
                     timeList,
@@ -112,6 +118,12 @@ export default class Index extends Component {
 
     navigateTo = (url) => {
         Taro.navigateTo({
+            url
+        })
+    }
+
+    redirectTo = (url) => {
+        Taro.redirectTo({
             url
         })
     }
@@ -156,8 +168,24 @@ export default class Index extends Component {
         })
     }
 
+    selectCoupon = () => {
+        const { selectCoupon = false } = this.state;
+        this.setState({
+            selectCoupon: !selectCoupon
+        }, this.toggleCouponModal)
+    }
+
+    confirmOrder = () => {
+        const { selectCoupon = false, selectDate = '' } = this.state;
+        if (selectCoupon) {
+            this.redirectTo(`/pages/success/index?type=${selectDate ? 1 : 2}`)  // type: [1: 立即送出] [2: 预定单]
+        } else {
+            showToast('快让爱你的人给你做好吃的吧！')
+        }
+    }
+
     render() {
-        const { orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], } = this.state;
+        const { orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, } = this.state;
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
@@ -202,13 +230,18 @@ export default class Index extends Component {
                         }
                         <View className='confirm_coupon'>
                             {
-                                !selectCoupon ? <View className='show_name'>小兔吃好喝好万能券</View> : null
+                                selectCoupon ? <View className='show_name'>小兔吃好喝好万能券</View> : null
                             }
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
                             </View>
                         </View>
                     </View>
+
+                </View>
+                <View className='pay_wrapper'>
+                    <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>
+                    <View className='pay_btn' onClick={this.confirmOrder}>{selectCoupon ? (!selectDate ? '好饿！立即下单！' : '就预定这些吧！') : '我好像付不起'}</View>
                 </View>
                 <AtFloatLayout isOpened={showModal} title="请选择送达时间" onClose={this.toggleModal}>
                     <View className='select_modal'>
@@ -261,7 +294,16 @@ export default class Index extends Component {
 
                 <AtFloatLayout isOpened={showCouponModal} title="请选择优惠券" onClose={this.toggleCouponModal}>
                     <View className='coupon_modal'>
-                        一张优惠券
+                        <View className={selectCoupon ? 'coupon_top active' : 'coupon_top'} onClick={this.selectCoupon}>
+                            <View>小兔吃好喝好万能券</View>
+                            {
+                                selectCoupon ? <Image className='check_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/check.png' /> : null
+                            }
+                        </View>
+                        <View className="coupon_bottom">
+                            <View>仅限可爱小兔使用</View>
+                            <View className='coupon_date'>有效期至<Image className='infinity_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/infinity.png' /></View>
+                        </View>
                     </View>
                 </AtFloatLayout>
             </View>
