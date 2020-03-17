@@ -24,14 +24,15 @@ exports.main = async event => {
   }
 
   async function addOrder(event) {
-    const { selectDate = '', list = [] } = event;
+    const { selectDate = '', list = [], note = '' } = event;
     const { OPENID } = cloud.getWXContext()
 
     return await db.collection(`orders`).add({
       data: {
         userId: OPENID,
         createTime: selectDate,
-        list
+        list,
+        note
       }
     })
   }

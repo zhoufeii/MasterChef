@@ -3,7 +3,8 @@ import "./index.less";
 import moment from "moment";
 import {
   AtAvatar,
-  AtFloatLayout
+  AtFloatLayout,
+  AtTextarea
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
@@ -51,6 +52,7 @@ export default class Index extends Component {
             selectCoupon: false,
             showCouponModal: false,
             price: 0,
+            note: '',
         }
     }
 
@@ -181,7 +183,7 @@ export default class Index extends Component {
 
     confirmOrder = () => {
         const _this = this;
-        const { selectCoupon = false, selectDate = '', orderList = [], env } = _this.state;
+        const { selectCoupon = false, selectDate = '', note = '', orderList = [], env } = _this.state;
 
         const list = orderList.map(item => {
             return {
@@ -192,15 +194,15 @@ export default class Index extends Component {
         const data = {
             selectDate: selectDate || formatTime(moment()),
             list,
+            note,
         }
-        console.log({ ...data, action: 'addOrder', env })
         if (selectCoupon) {
             Taro.cloud.callFunction({
                 name: 'orders',
                 data: { ...data, action: 'addOrder', env },
             }).then(res => {
                 const orderId = res && res.result && res.result._id || '';
-                this.redirectTo(`/pages/success/index?type=${selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
+                this.redirectTo(`/pages/success/index?type=${!selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
             }).catch(err => {
                 showToast('下单失败，请联系大熊！')
             })
@@ -209,8 +211,15 @@ export default class Index extends Component {
         }
     }
 
+    onNoteChange = (event) => {
+        console.log(event);
+        this.setState({
+            note: event.target.value
+        })
+    }
+
     render() {
-        const { orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, } = this.state;
+        const { orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '' } = this.state;
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
@@ -255,14 +264,21 @@ export default class Index extends Component {
                         }
                         <View className='confirm_coupon'>
                             {
-                                selectCoupon ? <View className='show_name'>小兔吃好喝好万能券</View> : null
+                                selectCoupon ? <View className='show_name'>小兔吃好喝好券</View> : null
                             }
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
                             </View>
                         </View>
                     </View>
-
+                </View>
+                <View className='notes'>
+                    <AtTextarea
+                        value={note}
+                        onChange={this.onNoteChange}
+                        maxLength={200}
+                        placeholder='请输入订单备注，例如免葱、免辣'
+                    />
                 </View>
                 <View className='pay_wrapper'>
                     <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>
@@ -317,7 +333,7 @@ export default class Index extends Component {
                 <AtFloatLayout isOpened={showCouponModal} title="请选择优惠券" onClose={this.toggleCouponModal}>
                     <View className='coupon_modal'>
                         <View className={selectCoupon ? 'coupon_top active' : 'coupon_top'} onClick={this.selectCoupon}>
-                            <View>小兔吃好喝好万能券</View>
+                            <View>小兔吃好喝好券</View>
                             {
                                 selectCoupon ? <Image className='check_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/check.png' /> : null
                             }
