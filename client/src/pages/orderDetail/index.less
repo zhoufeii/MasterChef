@@ -1,0 +1,174 @@
+.orderDetail {
+    padding: 20px 20px 30px;
+    color: #6A6A6A;
+
+    .foods {
+        border-radius: 20px;
+        padding: 20px;
+        padding-bottom: 0;
+        box-shadow: 4px 4px 10px 4px #f0f0f0;
+        background: #fff;
+
+        .shop_info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+
+            .shop_name {
+                font-weight: bold;
+            }
+
+            .right_arrow {
+                width: 60px;
+                height: 60px;
+                font-size: 0;
+
+                image {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+
+        .item_wrapper {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 20px;
+
+            .item_info {
+                display: flex;
+                align-items: center;
+
+                .food_item {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    padding-left: 10px;
+                    height: 100%;
+
+                    .food_name {
+                        font-size: 30px;
+                    }
+
+                    .food_desc {
+                        font-size: 26px;
+                        color: lightgray;
+                    }
+                }
+            }
+
+            .item_price {
+                display: flex;
+                align-items: center;
+
+                .item_count {
+                    margin-right: 10px;
+                }
+            }
+        }
+
+
+        .confirm_coupon_wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+
+            .confirm_coupon_label {
+                font-size: 28px;
+            }
+
+            .confirm_coupon {
+                display: flex;
+                align-items: center;
+
+                .right_arrow {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 0;
+
+                    image {
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+
+        .coupon {
+            color: #6190E8;
+        }
+
+        .black {
+            color: #333;
+        }
+    }
+
+    .order_info {
+        border-radius: 20rpx;
+        padding: 20rpx;
+        box-shadow: 4rpx 4rpx 10rpx 4rpx #f0f0f0;
+        background: #fff;
+        margin-top: 20px;
+
+        .order_info_title {
+            font-weight: bold;
+            padding: 20rpx 0;
+            border-bottom: 1rpx solid #f0f0f0;
+            margin-bottom: 20rpx;
+            padding-top: 0;
+
+        }
+
+        .order_info_order_time,
+        .order_info_except_time,
+        .order_info_address,
+        .order_info_service,
+        .order_info_man {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 28px;
+            margin: 12px 0;
+        }
+
+        .order_info_service {
+            .order_info_extra {
+                color: #fff;
+                background: #6190E8;
+                border-radius: 10px;
+                padding: 7px 10px;
+                box-sizing: border-box;
+                font-size: 22px;
+            }
+        }
+    }
+
+    .notes {
+        border-radius: 20rpx;
+        padding: 20rpx;
+        box-shadow: 4rpx 4rpx 10rpx 4rpx #f0f0f0;
+        background: #fff;
+        margin-top: 20px;
+
+        .notes_title {
+            font-weight: bold;
+            padding: 20rpx 0;
+            border-bottom: 1rpx solid #f0f0f0;
+            margin-bottom: 20rpx;
+            padding-top: 0;
+        }
+
+        .notes_content {
+            font-size: 28px;
+        }
+    }
+}
+
+.extra_info {
+    font-size: 28px;
+    color: #6190E8;
+}

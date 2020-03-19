@@ -33,7 +33,9 @@ class App extends Component {
       'pages/add/index',
       'pages/login/index',
       'pages/confirm/index',
-      'pages/success/index'
+      'pages/success/index',
+      'pages/orderDetail/index',
+      // 'pages/orderList/index'
     ],
     window: {
       backgroundTextStyle: 'light',

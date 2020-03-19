@@ -2,8 +2,10 @@ import "./index.less";
 
 import moment from "moment";
 import {
+  AtActivityIndicator,
   AtAvatar,
-  AtFloatLayout
+  AtFloatLayout,
+  AtInput
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
@@ -14,10 +16,6 @@ import { showToast } from "../../utils/index";
 
 function format(date) {
     return date.format('YYYY-MM-DD')
-}
-
-function formatTime(date) {
-    return date.format('YYYY-MM-DD HH:mm:ss')
 }
 
 const CALENDAR_LOCALE = {
@@ -51,6 +49,8 @@ export default class Index extends Component {
             selectCoupon: false,
             showCouponModal: false,
             price: 0,
+            note: '',
+            loading: false
         }
     }
 
@@ -181,39 +181,58 @@ export default class Index extends Component {
 
     confirmOrder = () => {
         const _this = this;
-        const { selectCoupon = false, selectDate = '', orderList = [], env } = _this.state;
+        const { selectCoupon = false, selectDate = '', note = '', orderList = [], env } = _this.state;
 
         const list = orderList.map(item => {
             return {
                 id: item._id,
-                count: item.count
+                count: item.count,
+                name: item.name,
+                desc: item.desc,
+                pic: item.pics.length && item.pics[0].url || ''
             }
         })
         const data = {
-            selectDate: selectDate || formatTime(moment()),
+            selectDate: selectDate || '尽快送达',
             list,
+            note,
         }
-        console.log({ ...data, action: 'addOrder', env })
         if (selectCoupon) {
-            Taro.cloud.callFunction({
-                name: 'orders',
-                data: { ...data, action: 'addOrder', env },
-            }).then(res => {
-                const orderId = res && res.result && res.result._id || '';
-                this.redirectTo(`/pages/success/index?type=${selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
-            }).catch(err => {
-                showToast('下单失败，请联系大熊！')
+            this.setState({
+                loading: true
+            }, () => {
+                Taro.cloud.callFunction({
+                    name: 'orders',
+                    data: { ...data, action: 'addOrder', env },
+                }).then(res => {
+                    this.setState({
+                        loading: false
+                    }, () => {
+                        const orderId = res && res.result && res.result._id || '';
+                        this.redirectTo(`/pages/success/index?type=${!selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
+                    })
+                }).catch(err => {
+                    showToast('下单失败，请联系大熊！')
+                })
             })
         } else {
             showToast('快让爱你的人给你做好吃的吧！')
         }
     }
 
+    onNoteChange = (note = '') => {
+        this.setState({
+            note
+        })
+    }
+
     render() {
-        const { orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, } = this.state;
+        const { loading = false, orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '' } = this.state;
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
+                {/* 使用 cover-view */}
+                <AtActivityIndicator isOpened={loading} mode='center'></AtActivityIndicator>
                 <View className='confirm_info'>
                     <View className='confirm_title'>
                         <View className='shop_name'>熊家厨房【官方直营】</View>
@@ -225,7 +244,7 @@ export default class Index extends Component {
                         }
                         <View className='confirm_date'>
                             {
-                                selectDate ? <View className='show_name'>{selectDate}</View> : null
+                                selectDate ? <View className='extra_info'>{selectDate}</View> : null
                             }
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
@@ -255,14 +274,28 @@ export default class Index extends Component {
                         }
                         <View className='confirm_coupon'>
                             {
-                                selectCoupon ? <View className='show_name'>小兔吃好喝好万能券</View> : null
+                                selectCoupon ? <View className='extra_info'>小兔吃好喝好券</View> : null
                             }
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
                             </View>
                         </View>
                     </View>
-
+                </View>
+                <View className='notes'>
+                    {/* <AtTextarea
+                        value={note}
+                        onChange={this.onNoteChange}
+                        maxLength={200}
+                        placeholder='请输入订单备注，例如免葱、免辣'
+                    /> */}
+                    <AtInput
+                        name='note'
+                        type='text'
+                        placeholder='请输入订单备注，例如免葱、免辣'
+                        value={note}
+                        onChange={this.onNoteChange}
+                    />
                 </View>
                 <View className='pay_wrapper'>
                     <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>
@@ -317,7 +350,7 @@ export default class Index extends Component {
                 <AtFloatLayout isOpened={showCouponModal} title="请选择优惠券" onClose={this.toggleCouponModal}>
                     <View className='coupon_modal'>
                         <View className={selectCoupon ? 'coupon_top active' : 'coupon_top'} onClick={this.selectCoupon}>
-                            <View>小兔吃好喝好万能券</View>
+                            <View>小兔吃好喝好券</View>
                             {
                                 selectCoupon ? <Image className='check_icon' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/check.png' /> : null
                             }

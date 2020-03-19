@@ -22,6 +22,9 @@ const showToast = (title = '', icon = '', callback = () => { }) => {
         callback()
     })
 }
+const hideToast = () => {
+    Taro.hideToast()
+}
 
 const cloudUploadImage = (env, dir, event, callback) => {
     const filePath = event[0].url;
@@ -66,5 +69,6 @@ const cloudUploadImage = (env, dir, event, callback) => {
 module.exports = {
     errorHandler,
     showToast,
+    hideToast,
     cloudUploadImage
 }

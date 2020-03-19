@@ -1,10 +1,10 @@
 .confirm {
-    padding: 10px 20px 0;
+    padding: 20px 20px 30px;
     color: #6A6A6A;
 }
 
 .confirm_info {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     padding: 20px;
     background: #fff;
     border-radius: 20px;
@@ -25,12 +25,10 @@
         .shop_icon {
             color: #fff;
             background: #6190E8;
-
             border-radius: 10px;
             padding: 7px 10px;
             box-sizing: border-box;
             font-size: 20px;
-
         }
     }
 
@@ -65,8 +63,47 @@
 .foods {
     border-radius: 20px;
     padding: 20px;
-    box-shadow: 5rpx 5rpx 10rpx 5rpx #f0f0f0;
-    margin-bottom: 160px;
+    box-shadow: 4px 4px 10px 4px #f0f0f0;
+    background: #fff;
+
+
+    .item_wrapper {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 20px;
+
+        .item_info {
+            display: flex;
+            align-items: center;
+
+            .food_item {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding-left: 10px;
+                height: 100%;
+
+                .food_name {
+                    font-size: 30px;
+                }
+
+                .food_desc {
+                    font-size: 26px;
+                    color: lightgray;
+                }
+            }
+        }
+
+        .item_price {
+            display: flex;
+            align-items: center;
+
+            .item_count {
+                margin-right: 10px;
+            }
+        }
+    }
+
 
     .confirm_coupon_wrapper {
         display: flex;
@@ -97,42 +134,18 @@
     }
 }
 
-.item_wrapper {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 20px;
+.notes {
+    margin-bottom: 160px;
+    border-radius: 20px;
+    margin-top: 30px;
+    box-shadow: 4px 4px 10px 4px #f0f0f0;
 
-    .item_info {
-        display: flex;
-        align-items: center;
-
-        .food_item {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding-left: 10px;
-            height: 100%;
-
-            .food_name {
-                font-size: 30px;
-            }
-
-            .food_desc {
-                font-size: 26px;
-                color: lightgray;
-            }
-        }
-    }
-
-    .item_price {
-        display: flex;
-        align-items: center;
-
-        .item_count {
-            margin-right: 10px;
-        }
+    .at-textarea {
+        border: none !important;
+        border-radius: 20px !important;
     }
 }
+
 
 .select_modal {
     display: flex;
@@ -188,7 +201,7 @@
     background: #F6F4F7 !important;
 }
 
-.show_name {
+.extra_info {
     font-size: 28px;
 }
 
@@ -201,7 +214,9 @@
 
 .coupon_top,
 .coupon_bottom {
-    padding: 10px;
+    padding: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     box-sizing: border-box;
 }
 
@@ -216,8 +231,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 15px;
-    padding-bottom: 15px;
 
     .check_icon {
         width: 40px;
@@ -234,8 +247,6 @@
     background: #fff;
     color: #a6a6a6;
     border-radius: 0 0 10px 10px;
-    padding-top: 15px;
-    padding-bottom: 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -285,4 +296,14 @@
         border-radius: 0 50px 50px 0;
         text-align: center;
     }
+}
+
+.at-float-layout__container {
+    z-index: 99999 !important;
+}
+
+.at-input {
+    padding: 24px !important;
+    margin-left: 0px !important;
+    border-radius: 20px !important;
 }

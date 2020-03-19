@@ -18,20 +18,53 @@ exports.main = async event => {
     case 'addOrder': {
       return addOrder(event)
     }
+    case 'getOrder': {  // 获取某个订单
+      return getOrder(event)
+    }
+    case 'getOrders': { // 获取当前用户全部订单
+      return getOrders(event)
+    }
     default: {
       return
     }
   }
 
   async function addOrder(event) {
-    const { selectDate = '', list = [] } = event;
+    const { selectDate = '', list = [], note = '' } = event;
+    const { OPENID } = cloud.getWXContext()
+
+    return await db.collection(`orders`).add({
+      data: {
+        userId: OPENID,
+        createTime: new Date().getTime(),
+        list,
+        note,
+        deliverDate: selectDate
+      }
+    })
+  }
+
+  async function getOrder(event) {
+    const { id = '' } = event;
+
+    if (!id) {
+      return { msg: '订单id为空！' }
+    }
+
+    return await db.collection('orders').where({
+      _id: id
+    }).orderBy('createTime', 'desc').get()
+  }
+
+  async function getOrders(event) {
     const { OPENID } = cloud.getWXContext()
 
     return await db.collection(`orders`).add({
       data: {
         userId: OPENID,
         createTime: selectDate,
-        list
+        list,
+        note
       }
     })
   }
