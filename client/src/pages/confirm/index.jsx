@@ -5,7 +5,7 @@ import {
   AtActivityIndicator,
   AtAvatar,
   AtFloatLayout,
-  AtTextarea
+  AtInput
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
@@ -220,10 +220,9 @@ export default class Index extends Component {
         }
     }
 
-    onNoteChange = (event) => {
-        console.log(event);
+    onNoteChange = (note = '') => {
         this.setState({
-            note: event.target.value
+            note
         })
     }
 
@@ -232,8 +231,8 @@ export default class Index extends Component {
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
+                {/* 使用 cover-view */}
                 <AtActivityIndicator isOpened={loading} mode='center'></AtActivityIndicator>
-
                 <View className='confirm_info'>
                     <View className='confirm_title'>
                         <View className='shop_name'>熊家厨房【官方直营】</View>
@@ -284,11 +283,18 @@ export default class Index extends Component {
                     </View>
                 </View>
                 <View className='notes'>
-                    <AtTextarea
+                    {/* <AtTextarea
                         value={note}
                         onChange={this.onNoteChange}
                         maxLength={200}
                         placeholder='请输入订单备注，例如免葱、免辣'
+                    /> */}
+                    <AtInput
+                        name='note'
+                        type='text'
+                        placeholder='请输入订单备注，例如免葱、免辣'
+                        value={note}
+                        onChange={this.onNoteChange}
                     />
                 </View>
                 <View className='pay_wrapper'>
