@@ -4,8 +4,7 @@ import moment from "moment";
 import {
   AtActivityIndicator,
   AtAvatar,
-  AtFloatLayout,
-  AtInput
+  AtFloatLayout
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
@@ -220,12 +219,6 @@ export default class Index extends Component {
         }
     }
 
-    onNoteChange = (note = '') => {
-        this.setState({
-            note
-        })
-    }
-
     render() {
         const { loading = false, orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '' } = this.state;
         const timeList = dateList.map(item => item.timeList)
@@ -282,20 +275,16 @@ export default class Index extends Component {
                         </View>
                     </View>
                 </View>
-                <View className='notes'>
-                    {/* <AtTextarea
-                        value={note}
-                        onChange={this.onNoteChange}
-                        maxLength={200}
-                        placeholder='请输入订单备注，例如免葱、免辣'
-                    /> */}
-                    <AtInput
-                        name='note'
-                        type='text'
-                        placeholder='请输入订单备注，例如免葱、免辣'
-                        value={note}
-                        onChange={this.onNoteChange}
-                    />
+                <View className='note' onClick={this.navigateTo.bind(this, `/pages/note/index?note=${encodeURI(note)}`)}>
+                    <View className='note_label'>备注</View>
+                    <View className='note_content_wrapper'>
+                        {
+                            note ? <View className='note_content'>{note}</View> : null
+                        }
+                        <View className='right_arrow'>
+                            <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                        </View>
+                    </View>
                 </View>
                 <View className='pay_wrapper'>
                     <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>

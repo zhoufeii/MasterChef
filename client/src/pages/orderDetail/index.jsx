@@ -120,7 +120,7 @@ export default class Index extends Component {
                     </View>
                     <View className='order_info_man'>
                         <View>厨师&配送</View>
-                        <View className='order_info_extra'>大大熊一只</View>
+                        <View className='order_info_extra'>帅气熊一只</View>
                     </View>
                 </View>
                 <View className='notes'>
