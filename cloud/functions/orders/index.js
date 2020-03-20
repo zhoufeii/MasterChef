@@ -53,19 +53,15 @@ exports.main = async event => {
 
     return await db.collection('orders').where({
       _id: id
-    }).orderBy('createTime', 'desc').get()
+    })
   }
 
   async function getOrders(event) {
     const { OPENID } = cloud.getWXContext()
+    const { pageNo = 0, pageSize = 10 } = event
 
-    return await db.collection(`orders`).add({
-      data: {
-        userId: OPENID,
-        createTime: selectDate,
-        list,
-        note
-      }
-    })
+    return await db.collection('orders').where({
+      userId: OPENID
+    }).orderBy('createTime', 'desc').skip(pageNo * pageSize).limit(pageSize).get()
   }
 }

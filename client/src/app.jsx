@@ -33,15 +33,17 @@ class App extends Component {
       'pages/add/index',
       'pages/login/index',
       'pages/confirm/index',
+      'pages/note/index',
       'pages/success/index',
       'pages/orderDetail/index',
-      // 'pages/orderList/index'
+      'pages/orderList/index'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarTextStyle: 'black',
+      onReachBottomDistance: 300
     }
   }
 
