@@ -1,4 +1,8 @@
-const globalData = {}
+const globalData = {
+    ADMIN: 1,
+    RABBIT: 2,
+    OTHERS: 3,
+}
 
 const setGlobalData = function (key, val) {
     globalData[key] = val

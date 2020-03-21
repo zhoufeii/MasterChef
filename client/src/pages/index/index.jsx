@@ -2,6 +2,7 @@ import "./index.less";
 
 import {
   AtActivityIndicator,
+  AtAvatar,
   AtGrid
 } from "taro-ui";
 
@@ -12,7 +13,14 @@ import {
 import { Component } from "@tarojs/taro";
 
 import Banner from "../../components/banner";
-import { getGlobalData } from "../../utils/globalData";
+import {
+  getGlobalData,
+  setGlobalData
+} from "../../utils/globalData";
+
+const ADMIN = 1;
+const RABBIT = 2;
+const OTHERS = 3;
 
 export default class Index extends Component {
   constructor() {
@@ -82,6 +90,7 @@ export default class Index extends Component {
             }
           }).then(res => {
             console.log(res)
+            setGlobalData('USER_TYPE', OTHERS)
             // const storageUserId = res && res.result && res.result.data && res.result.data[0] && res.result.data[0]._id || '';
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
@@ -90,13 +99,13 @@ export default class Index extends Component {
                 data: {
                   env,
                   action: 'addUser',
-                  userInfo: { ...userInfo, userType: 2 }
+                  userInfo: { ...userInfo, USER_TYPE: OTHERS }
                 },
               }).then(res => {
                 _this.setState({
                   loading: false,
                   hasAuth: true,
-                  userInfo,
+                  userInfo: { ...userInfo, USER_TYPE: OTHERS },
                 })
               }).catch(err => { })
             } else {
@@ -190,6 +199,7 @@ export default class Index extends Component {
 
   render() {
     const { userInfo = {}, hasAuth = false, loading = true, } = this.state;
+    console.log(userInfo)
     return (
       <View className='index'>
         <Banner />
@@ -202,8 +212,8 @@ export default class Index extends Component {
           !loading && !hasAuth ? <Button className='login_btn' open-type="getUserInfo" onGetUserInfo={this.buttonGetUserInfo} >使用微信登录</Button> : null
         }
         {
-          userInfo.userType ? <View>
-            {/* <View className='user_info_container'>
+          userInfo.USER_TYPE ? <View>
+            <View className='user_info_container'>
               <View className='user_info_item'>
                 {
                   userInfo.avatarUrl ? <AtAvatar image={userInfo.avatarUrl}></AtAvatar> : null
@@ -214,7 +224,7 @@ export default class Index extends Component {
                   userInfo.nickName ? <Text>你好，{userInfo.nickName}</Text> : null
                 }
               </View>
-            </View> */}
+            </View>
             <AtGrid onClick={item => {
               this.navigateTo(item.url)
             }} data={

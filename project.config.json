@@ -9,7 +9,7 @@
 		"es6": false,
 		"enhance": false,
 		"postcss": true,
-		"minified": false,
+		"minified": true,
 		"newFeature": true,
 		"coverView": true,
 		"autoAudits": false,
@@ -26,6 +26,6 @@
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
-	"libVersion": "2.10.2",
+	"libVersion": "2.10.3",
 	"condition": {}
 }
