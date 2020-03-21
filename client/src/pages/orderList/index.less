@@ -1,5 +1,19 @@
 .orderList {
-    padding: 20px 20px 30px;
+    padding: 0px 20px 30px;
+    position: relative;
+
+
+    .modal_wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, .5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     .order_item_wrapper {
         min-height: 200px;
@@ -10,42 +24,120 @@
         box-shadow: 2px 2px 10px 4px lightgrey;
 
         .order_item_head {
-            font-weight: bold;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .shop_name {
+                color: #6A6A6A;
+                font-weight: bold;
+            }
+
+            .right_arrow {
+                width: 60px;
+                height: 60px;
+                font-size: 0;
+
+                image {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
         }
 
         .order_item_mid {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 10px 0;
+            margin: 20px 0;
 
-            .food_pic_wrapper {
-                display: flex;
-                align-items: center;
-                justify-content: space-around;
+            .foods_wrapper {
+                white-space: nowrap;
+                width: 77%;
 
-                .food_pic {
-                    width: 120px;
+                .food_pic_wrapper {
                     height: 120px;
-                    margin-right: 10px;
-                    border-radius: 5px;
+
+                    .food_pic {
+                        width: 120px;
+                        height: 120px;
+                        margin-right: 15px;
+                        border-radius: 10px;
+                    }
                 }
+
             }
 
             .food_count {
+                width: 23%;
                 color: #a6a6a6;
                 font-size: 26px;
                 letter-spacing: 1px;
-
+                text-align: right;
             }
         }
 
-        .order_item_bottom {}
+        .order_item_bottom {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 5px;
+
+            .order_item_bottom_item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #a6a6a6;
+                font-size: 28px;
+                margin: 15px 0;
+
+                .right_btns {
+                    display: flex;
+
+                    .same_more_btn,
+                    .comment_btn {
+                        width: 120px;
+                        border: 1px solid #6190E8;
+                        text-align: center;
+                        border-radius: 10px;
+                        padding: 2.5px 0;
+                        padding: 10px;
+                    }
+
+                    .same_more_btn {
+                        color: #6190E8;
+                        background: #fff;
+                        margin-right: 10px;
+                    }
+
+                    .comment_btn {
+                        color: #fff;
+                        background: #6190E8;
+                    }
+                }
+
+            }
+
+        }
     }
 
-    .bottom_line {
+    .bottom_line_wrapper {
         margin: 15px 0 0;
         color: #a6a6a6;
         text-align: center;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .bottom_line {
+            background: #a6a6a6;
+            width: 100px;
+            height: 1px;
+        }
+
+        .bottom_line_text {
+            margin: 0 10px;
+        }
     }
 }
