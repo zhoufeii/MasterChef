@@ -4,7 +4,8 @@ import moment from "moment";
 import {
   AtActivityIndicator,
   AtAvatar,
-  AtFloatLayout
+  AtFloatLayout,
+  AtModal
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
@@ -41,6 +42,8 @@ export default class Index extends Component {
         super();
         this.state = {
             env: getGlobalData('env') || '',
+            USER_TYPE: getGlobalData('USER_TYPE'),
+            OTHERS: getGlobalData('OTHERS'),
             orderList: [],
             deliverDate: 0,
             deliverTime: '',
@@ -49,7 +52,8 @@ export default class Index extends Component {
             showCouponModal: false,
             price: 0,
             note: '',
-            loading: false
+            loading: false,
+            showTipsModal: false
         }
     }
 
@@ -215,12 +219,14 @@ export default class Index extends Component {
                 })
             })
         } else {
-            showToast('快让爱你的人给你做好吃的吧！')
+            this.setState({
+                showTipsModal: true
+            })
         }
     }
 
     render() {
-        const { loading = false, orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '' } = this.state;
+        const { showTipsModal = false, loading = false, orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '', USER_TYPE, OTHERS } = this.state;
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
@@ -261,19 +267,21 @@ export default class Index extends Component {
                             </View>
                         </View>)
                     }
-                    <View className='confirm_coupon_wrapper' onClick={this.toggleCouponModal}>
-                        {
-                            !selectCoupon ? <View className='confirm_coupon_label'>请选择优惠券</View> : <View className='confirm_coupon_label'>使用优惠券</View>
-                        }
-                        <View className='confirm_coupon'>
+                    {
+                        USER_TYPE && USER_TYPE !== OTHERS ? <View className='confirm_coupon_wrapper' onClick={this.toggleCouponModal}>
                             {
-                                selectCoupon ? <View className='extra_info'>小兔吃好喝好券</View> : null
+                                !selectCoupon ? <View className='confirm_coupon_label'>请选择优惠券</View> : <View className='confirm_coupon_label'>使用优惠券</View>
                             }
-                            <View className='right_arrow'>
-                                <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                            <View className='confirm_coupon'>
+                                {
+                                    selectCoupon ? <View className='extra_info'>小兔吃好喝好券</View> : null
+                                }
+                                <View className='right_arrow'>
+                                    <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                                </View>
                             </View>
-                        </View>
-                    </View>
+                        </View> : null
+                    }
                 </View>
                 <View className='note' onClick={this.navigateTo.bind(this, `/pages/note/index?note=${encodeURI(note)}`)}>
                     <View className='note_label'>备注</View>
@@ -290,6 +298,20 @@ export default class Index extends Component {
                     <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>
                     <View className='pay_btn' onClick={this.confirmOrder}>{selectCoupon ? (!selectDate ? '好饿！立即下单！' : '就预定这些吧！') : '我好像付不起'}</View>
                 </View>
+
+                <AtModal
+                    isOpened={showTipsModal}
+                    title=''
+                    cancelText=''
+                    confirmText='确定'
+                    onConfirm={() => {
+                        this.setState({
+                            showTipsModal: false
+                        })
+                    }}
+                    content='你不是我的可爱小兔,&#10;快让爱你的人给你做好吃的吧！'
+                />
+
                 <AtFloatLayout isOpened={showModal} title="请选择送达时间" onClose={this.toggleModal}>
                     <View className='select_modal'>
                         <View className='select_date'>

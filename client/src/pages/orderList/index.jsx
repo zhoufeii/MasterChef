@@ -139,10 +139,13 @@ export default class Index extends Component {
                     </View> : null
                 }
                 {
-                    initialCompleted && !list.length ? <View>还没有点过菜</View> : null
+                    initialCompleted && !list.length ? <View className='empty_wrapper'>
+                        <Image className='empty_image' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/empty.png' />
+                        <View className='empty_text'>兔兔还没有点过菜嗷</View>
+                    </View> : null
                 }
                 {
-                    noMore ? <View className='bottom_line_wrapper'>
+                    noMore && list.length ? <View className='bottom_line_wrapper'>
                         <View className='bottom_line'></View>
                         <View className='bottom_line_text'>我也是有底线的</View>
                         <View className='bottom_line'></View>
