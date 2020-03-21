@@ -101,6 +101,10 @@ export default class Index extends Component {
             return WEEK_LOCALE[item.date] ? { ...item, date: WEEK_LOCALE[item.date] } : item
         })
 
+        dateList = dateList.filter(item => {
+            return item.timeList.length
+        })
+
         Taro.getStorage({
             key: 'ORDER_LIST',
             success(res) {
