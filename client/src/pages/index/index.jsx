@@ -90,10 +90,11 @@ export default class Index extends Component {
             }
           }).then(res => {
             console.log(res)
-            setGlobalData('USER_TYPE', OTHERS)
+
             // const storageUserId = res && res.result && res.result.data && res.result.data[0] && res.result.data[0]._id || '';
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
+              setGlobalData('USER_TYPE', OTHERS)
               Taro.cloud.callFunction({
                 name: 'users',
                 data: {
@@ -109,6 +110,7 @@ export default class Index extends Component {
                 })
               }).catch(err => { })
             } else {
+              setGlobalData('USER_TYPE', userList[0].USER_TYPE)
               _this.setState({
                 loading: false,
                 hasAuth: true,
@@ -161,6 +163,7 @@ export default class Index extends Component {
     }).then(res => {
       const userList = res.result && res.result.data || [];
       if (userList.length) {
+        setGlobalData('USER_TYPE', userList[0].USER_TYPE)
         _this.setState({
           loading: false,
           hasAuth: true,
@@ -199,7 +202,6 @@ export default class Index extends Component {
 
   render() {
     const { userInfo = {}, hasAuth = false, loading = true, } = this.state;
-    console.log(userInfo)
     return (
       <View className='index'>
         <Banner />

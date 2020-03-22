@@ -30,7 +30,7 @@ exports.main = async event => {
   }
 
   async function addOrder(event) {
-    const { selectDate = '', list = [], note = '' } = event;
+    const { deliverDate = '', list = [], note = '' } = event;
     const { OPENID } = cloud.getWXContext()
 
     return await db.collection(`orders`).add({
@@ -39,7 +39,7 @@ exports.main = async event => {
         createTime: new Date().getTime(),
         list,
         note,
-        deliverDate: selectDate
+        deliverDate
       }
     })
   }
@@ -53,7 +53,7 @@ exports.main = async event => {
 
     return await db.collection('orders').where({
       _id: id
-    })
+    }).get()
   }
 
   async function getOrders(event) {

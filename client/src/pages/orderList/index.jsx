@@ -1,15 +1,15 @@
 import "./index.less";
 
 import moment from "moment";
-import { AtActivityIndicator } from "taro-ui";
 
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 
 function formatTime(date) {
-    return date.format('YYYY-MM-DD HH:mm')
+    return date.format('YYYY年MM月DD日 HH:mm')
 }
 
 export default class Index extends Component {
@@ -78,14 +78,10 @@ export default class Index extends Component {
     }
 
     render() {
-        const { list = [], loading = true, initialCompleted } = this.state;
+        const { list = [], loading = true, initialCompleted = false } = this.state;
         return (
             <View className='orderList'>
-                {
-                    loading ? <View className='modal_wrapper'>
-                        <AtActivityIndicator content='加载中...'></AtActivityIndicator>
-                    </View> : null
-                }
+                <Loading loading={loading} initialCompleted={false} />
                 {
                     initialCompleted && list.length ? <View>
                         {
