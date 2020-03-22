@@ -1,13 +1,11 @@
 import "./index.less";
 
-import { AtActivityIndicator } from "taro-ui";
-
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
-import Ball from "../../components/ball";
 import CartAndPay from "../../components/cartAndPay";
 import FoodList from "../../components/foodList";
+import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 
 export default class DetailBanner extends Component {
@@ -126,9 +124,9 @@ export default class DetailBanner extends Component {
     const _this = this;
     const { env } = _this.state;
 
-    _this.setState({
-      loading: true
-    })
+    // _this.setState({
+    //   loading: true
+    // })
     Taro.cloud.callFunction({
       name: 'foodSys',
       data: { ...data, action: 'getFoodsBySys', env },
@@ -142,7 +140,8 @@ export default class DetailBanner extends Component {
         _this.setState({
           sysList,
           currentFoodList: sysList[0] && sysList[0].containFoods || [],
-          loading: false
+          loading: false,
+          initialCompleted: true
         })
       }
     })
@@ -161,15 +160,13 @@ export default class DetailBanner extends Component {
   }
 
   render() {
-    const { current = 0, count = 0, loading = false, sysList = [], currentFoodList = [], orderList = [], ballStyle = {}, } = this.state;
+    const { current = 0, count = 0, loading = true, initialCompleted = false, sysList = [], currentFoodList = [], orderList = [], ballStyle = {}, } = this.state;
     const scrollTop = 0
     const Threshold = 20
 
     return <View className='menu_wrapper' >
-      <Ball ballStyle={ballStyle} />
-      {
-        loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
-      }
+      {/* <Ball ballStyle={ballStyle} /> */}
+      <Loading loading={loading} initialCompleted={initialCompleted} />
 
       <View id='menu_inner' className='menu_inner'>
         <ScrollView

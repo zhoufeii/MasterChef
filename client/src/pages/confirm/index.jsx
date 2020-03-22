@@ -2,7 +2,6 @@ import "./index.less";
 
 import moment from "moment";
 import {
-  AtActivityIndicator,
   AtAvatar,
   AtFloatLayout,
   AtModal
@@ -11,13 +10,14 @@ import {
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 import { showToast } from "../../utils/index";
 
 function format(date) {
-    return date.format('YYYY-MM-DD')
+    return date.format('YYYY年MM月DD日 HH:mm')
 }
-
+const TEMPLATE_ID = 'TSNZjgYEW2qm9ZDYFXnL5r5uKU-ZlDv7-2PK3N2EaO0'
 const CALENDAR_LOCALE = {
     sameDay: '[今天]',
     nextDay: '[明天]',
@@ -45,7 +45,7 @@ export default class Index extends Component {
             USER_TYPE: getGlobalData('USER_TYPE'),
             OTHERS: getGlobalData('OTHERS'),
             orderList: [],
-            deliverDate: 0,
+            deliverIndex: 0,
             deliverTime: '',
             showModal: false,
             selectCoupon: false,
@@ -159,7 +159,7 @@ export default class Index extends Component {
 
     setDate = (item = {}) => {
         this.setState({
-            deliverDate: item.id
+            deliverIndex: item.id
             // currentDate: item
         })
     }
@@ -169,12 +169,14 @@ export default class Index extends Component {
             deliverTime: item.id,
             showModal: false,
         }, () => {
-            const { deliverDate = '', deliverTime = '', dateList = [] } = this.state;
-            const date = dateList[deliverDate].dateFormat;
-            const time = dateList[deliverDate].timeList.filter(item => item.id === deliverTime)[0].time
-            const selectDate = `${date} ${time}`;
+            const { deliverIndex = '', deliverTime = '', dateList = [] } = this.state;
+            let date = dateList[deliverIndex].dateFormat;
+            const time = dateList[deliverIndex].timeList.filter(item => item.id === deliverTime)[0].time;
+            date = `${date.split(' ')[0]} ${time}`
+            // const deliverDate = date.split(' ')[1] = time;
+            console.log(date)
             this.setState({
-                selectDate
+                deliverDate: date
             })
         })
     }
@@ -188,7 +190,7 @@ export default class Index extends Component {
 
     confirmOrder = () => {
         const _this = this;
-        const { selectCoupon = false, selectDate = '', note = '', orderList = [], env } = _this.state;
+        const { selectCoupon = false, deliverDate = '', note = '', orderList = [], env } = _this.state;
 
         const list = orderList.map(item => {
             return {
@@ -200,27 +202,61 @@ export default class Index extends Component {
             }
         })
         const data = {
-            selectDate: selectDate || '尽快送达',
+            deliverDate: deliverDate || '尽快送达',
             list,
             note,
         }
         if (selectCoupon) {
-            this.setState({
-                loading: true
-            }, () => {
-                Taro.cloud.callFunction({
-                    name: 'orders',
-                    data: { ...data, action: 'addOrder', env },
-                }).then(res => {
-                    this.setState({
-                        loading: false
+            Taro.requestSubscribeMessage({
+                tmplIds: [TEMPLATE_ID], // 此处可填写多个模板 ID，但低版本微信不兼容只能授权一个
+                success(res) {
+                    console.log('已授权接收订阅消息')
+                    _this.setState({
+                        loading: true
                     }, () => {
-                        const orderId = res && res.result && res.result._id || '';
-                        this.redirectTo(`/pages/success/index?type=${!selectDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
+                        Taro.cloud.callFunction({
+                            name: 'orders',
+                            data: { ...data, action: 'addOrder', env },
+                        }).then(res => {
+                            _this.setState({
+                                loading: false
+                            }, () => {
+                                const orderId = res && res.result && res.result._id || '';
+                                Taro.cloud.callFunction({
+                                    name: 'subscribeMessage',
+                                    data: {
+                                        action: 'addSubscribeMessage',
+                                        page: `pages/orderDetail/index?id=${orderId}`,
+                                        env,
+                                        list,
+                                        deliverDate: deliverDate || format(moment().add(40, 'minutes')),
+                                        templateId: TEMPLATE_ID,
+                                    },
+                                }).then(res => {
+                                    console.log('增加订阅消息成功')
+                                }).catch(err => {
+                                    console.log(err)
+                                })
+
+                                Taro.cloud.callFunction({
+                                    name: 'subscribeMessage',
+                                    data: {
+                                        action: 'sendSubscribeMessage',
+                                        env,
+                                    },
+                                }).then(res => {
+                                    console.log('发送订阅消息成功')
+                                }).catch(err => {
+                                    console.log(err)
+                                })
+
+                                _this.redirectTo(`/pages/success/index?type=${!deliverDate ? 1 : 2}&id=${orderId}`)  // type: [1: 立即送出] [2: 预定单]
+                            })
+                        }).catch(err => {
+                            showToast('下单失败，请联系大熊！')
+                        })
                     })
-                }).catch(err => {
-                    showToast('下单失败，请联系大熊！')
-                })
+                }
             })
         } else {
             this.setState({
@@ -230,24 +266,69 @@ export default class Index extends Component {
     }
 
     render() {
-        const { showTipsModal = false, loading = false, orderList = [], selectCoupon = false, selectDate = '', showModal = false, showCouponModal = false, deliverDate = 0, deliverTime = '', dateList = [], price = 0, note = '', USER_TYPE, OTHERS } = this.state;
+        const { showTipsModal = false, loading = false, orderList = [], selectCoupon = false, deliverDate = '', showModal = false, showCouponModal = false, deliverIndex = 0, deliverTime = '', dateList = [], price = 0, note = '', USER_TYPE, OTHERS } = this.state;
         const timeList = dateList.map(item => item.timeList)
         return (
             <View className='confirm'>
                 {/* 使用 cover-view */}
-                <AtActivityIndicator isOpened={loading} mode='center'></AtActivityIndicator>
-                <View className='confirm_info'>
-                    <View className='confirm_title'>
-                        <View className='shop_name'>熊家厨房【官方直营】</View>
-                        <View className='shop_icon'>大熊专送</View>
-                    </View>
-                    <View className='confirm_date_wrapper' onClick={this.toggleModal}>
-                        {
-                            !selectDate ? <View className='confirm_date_label'>立即送出</View> : <View className='confirm_date_label'>指定时间</View>
-                        }
-                        <View className='confirm_date'>
+                <Loading loading={loading} initialCompleted={false} />
+                <View className='confirm_top'>
+                    <View className='confirm_info'>
+                        <View className='confirm_title'>
+                            <View className='shop_name'>熊家厨房【官方直营】</View>
+                            <View className='shop_icon'>大熊专送</View>
+                        </View>
+                        <View className='confirm_date_wrapper' onClick={this.toggleModal}>
                             {
-                                selectDate ? <View className='extra_info'>{selectDate}</View> : null
+                                !deliverDate ? <View className='confirm_date_label'>立即送出</View> : <View className='confirm_date_label'>指定时间</View>
+                            }
+                            <View className='confirm_date'>
+                                {
+                                    deliverDate ? <View className='extra_info'>{deliverDate}</View> : null
+                                }
+                                <View className='right_arrow'>
+                                    <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                    <View className='foods'>
+                        {
+                            orderList.map(item => <View key={item._id} className='item_wrapper'>
+                                <View className='item_info'>
+                                    <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
+                                    <View className='food_item'>
+                                        <View className='food_name'>{item.name}</View>
+                                        <View className='food_desc'>{item.desc}</View>
+                                    </View>
+                                </View>
+                                <View className='item_price'>
+                                    <View className='item_count'>x {item.count} </View>
+                                    <View>￥99999</View>
+                                </View>
+                            </View>)
+                        }
+                        {
+                            USER_TYPE && USER_TYPE !== OTHERS ? <View className='confirm_coupon_wrapper' onClick={this.toggleCouponModal}>
+                                {
+                                    !selectCoupon ? <View className='confirm_coupon_label'>请选择优惠券</View> : <View className='confirm_coupon_label'>使用优惠券</View>
+                                }
+                                <View className='confirm_coupon'>
+                                    {
+                                        selectCoupon ? <View className='extra_info'>小兔吃好喝好券</View> : null
+                                    }
+                                    <View className='right_arrow'>
+                                        <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                                    </View>
+                                </View>
+                            </View> : null
+                        }
+                    </View>
+                    <View className='note' onClick={this.navigateTo.bind(this, `/pages/note/index?note=${encodeURI(note)}`)}>
+                        <View className='note_label'>备注</View>
+                        <View className='note_content_wrapper'>
+                            {
+                                note ? <View className='note_content'>{note}</View> : null
                             }
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
@@ -255,52 +336,10 @@ export default class Index extends Component {
                         </View>
                     </View>
                 </View>
-                <View className='foods'>
-                    {
-                        orderList.map(item => <View key={item._id} className='item_wrapper'>
-                            <View className='item_info'>
-                                <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
-                                <View className='food_item'>
-                                    <View className='food_name'>{item.name}</View>
-                                    <View className='food_desc'>{item.desc}</View>
-                                </View>
-                            </View>
-                            <View className='item_price'>
-                                <View className='item_count'>x {item.count} </View>
-                                <View>￥99999</View>
-                            </View>
-                        </View>)
-                    }
-                    {
-                        USER_TYPE && USER_TYPE !== OTHERS ? <View className='confirm_coupon_wrapper' onClick={this.toggleCouponModal}>
-                            {
-                                !selectCoupon ? <View className='confirm_coupon_label'>请选择优惠券</View> : <View className='confirm_coupon_label'>使用优惠券</View>
-                            }
-                            <View className='confirm_coupon'>
-                                {
-                                    selectCoupon ? <View className='extra_info'>小兔吃好喝好券</View> : null
-                                }
-                                <View className='right_arrow'>
-                                    <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
-                                </View>
-                            </View>
-                        </View> : null
-                    }
-                </View>
-                <View className='note' onClick={this.navigateTo.bind(this, `/pages/note/index?note=${encodeURI(note)}`)}>
-                    <View className='note_label'>备注</View>
-                    <View className='note_content_wrapper'>
-                        {
-                            note ? <View className='note_content'>{note}</View> : null
-                        }
-                        <View className='right_arrow'>
-                            <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
-                        </View>
-                    </View>
-                </View>
+
                 <View className='pay_wrapper'>
                     <View className='price'>{`￥${selectCoupon ? 0 : price}`}</View>
-                    <View className='pay_btn' onClick={this.confirmOrder}>{selectCoupon ? (!selectDate ? '好饿！立即下单！' : '就预定这些吧！') : '我好像付不起'}</View>
+                    <View className='pay_btn' onClick={this.confirmOrder}>{selectCoupon ? (!deliverDate ? '好饿！立即下单！' : '就预定这些吧！') : '我好像付不起'}</View>
                 </View>
 
                 <AtModal
@@ -329,7 +368,7 @@ export default class Index extends Component {
                                 {
                                     dateList.map((item) => <View
                                         key={item.id}
-                                        className={deliverDate === item.id ? `date_item active` : `date_item`}
+                                        className={deliverIndex === item.id ? `date_item active` : `date_item`}
                                         onClick={this.setDate.bind(this, item)}
                                     >
                                         {item.date}
@@ -346,7 +385,7 @@ export default class Index extends Component {
                                 scrollTop={0}
                             >
                                 {
-                                    timeList[deliverDate] && timeList[deliverDate].map((item) => {
+                                    timeList[deliverIndex] && timeList[deliverIndex].map((item) => {
                                         return <View
                                             key={item.id}
                                             className={deliverTime === item.id ? `time_item active` : `time_item`}
