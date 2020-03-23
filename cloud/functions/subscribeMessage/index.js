@@ -1,5 +1,25 @@
 // // 云函数入口文件
 const cloud = require('wx-server-sdk')
+const Core = require('@alicloud/pop-core');
+
+const client = new Core({
+  accessKeyId: 'LTAI4FrfUcV6RLmC2f8x8dZs',
+  accessKeySecret: 'QVt5VCvn23RvVAMfOrbaL3dcpKpp8W',
+  endpoint: 'https://dysmsapi.aliyuncs.com',
+  apiVersion: '2017-05-25'
+});
+
+const params = {
+  "RegionId": "cn-hangzhou",
+  "PhoneNumbers": "18868412098",
+  "SignName": "小曹课程管家",
+  "TemplateCode": "SMS_123669090",
+  "TemplateParam": "{\"weekday\":\"星期一\",\"course\":\"语文\"}"
+}
+
+const requestOption = {
+  method: 'POST'
+};
 
 exports.main = async event => {
   const { action = '', env = '' } = event;
@@ -56,8 +76,19 @@ exports.main = async event => {
 
     // 循环消息列表
     const sendPromises = messages.data.map(async message => {
-      let msgContent = message.data.list.map(item => ({ name: item.name, count: item.count })).map(item => `${item.name}*${item.count}`).join(',')
-      msgContent = msgContent.length > 20 ? `${msgContent.substring(0, 17)}...` : msgContent
+      let msgContent = message.data.list.map(item => ({ name: item.name }));
+      let finalText = '';
+
+      for (let i = 0; i < msgContent.length; i++) {
+        finalText += `${msgContent[i].name},`;
+        if (finalText.length > 7) break;
+      }
+      debugger;
+      finalText = finalText.substring(0, finalText.length - 1)
+      finalText += `等菜品`
+      // msgContent = msgContent.length > 20 ? `${msgContent.substring(0, 17)}...` : msgContent
+
+      console.log(finalText)
       try {
         // 发送订阅消息
         await cloud.openapi.subscribeMessage.send({
@@ -71,7 +102,7 @@ exports.main = async event => {
               value: message.data.deliverDate,
             },
             thing9: {
-              value: msgContent,  // 存在长度限制，20个字符
+              value: finalText,  // 存在长度限制，20个字符
             },
             phrase10: {
               value: '已下单', // 暂时固定为已下单，之后会动态改变状态
@@ -93,6 +124,12 @@ exports.main = async event => {
         console.log(err)
       }
     });
+
+    client.request('SendSms', params, requestOption).then((result) => {
+      console.log(JSON.stringify(result));
+    }, (ex) => {
+      console.log(ex);
+    })
 
     return Promise.all(sendPromises);
   }
