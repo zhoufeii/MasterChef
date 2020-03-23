@@ -17,7 +17,7 @@ import { showToast } from "../../utils/index";
 function format(date) {
     return date.format('YYYY年MM月DD日 HH:mm')
 }
-const TEMPLATE_ID = 'TSNZjgYEW2qm9ZDYFXnL5r5uKU-ZlDv7-2PK3N2EaO0'
+const TEMPLATE_ID = 'TSNZjgYEW2qm9ZDYFXnL5qm6rwGCvO3VQ_cimHIYR6E'
 const CALENDAR_LOCALE = {
     sameDay: '[今天]',
     nextDay: '[明天]',
@@ -207,7 +207,7 @@ export default class Index extends Component {
             note,
         }
         if (selectCoupon) {
-            Taro.requestSubscribeMessage({
+            Taro.requestSubscribeMessage({  // 必须在点击事件中调用！！不能放在回调函数中！！
                 tmplIds: [TEMPLATE_ID], // 此处可填写多个模板 ID，但低版本微信不兼容只能授权一个
                 success(res) {
                     console.log('已授权接收订阅消息')
