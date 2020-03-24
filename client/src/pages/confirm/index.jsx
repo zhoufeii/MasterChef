@@ -2,7 +2,6 @@ import "./index.less";
 
 import moment from "moment";
 import {
-  AtAvatar,
   AtFloatLayout,
   AtModal
 } from "taro-ui";
@@ -10,6 +9,7 @@ import {
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Avatar from "../../components/avatar";
 import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 import { showToast } from "../../utils/index";
@@ -296,7 +296,7 @@ export default class Index extends Component {
                         {
                             orderList.map(item => <View key={item._id} className='item_wrapper'>
                                 <View className='item_info'>
-                                    <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
+                                    <Avatar pic={item.pics.length && item.pics[0].url || ''} text={item.name} />
                                     <View className='food_item'>
                                         <View className='food_name'>{item.name}</View>
                                         <View className='food_desc'>{item.desc}</View>

@@ -5,6 +5,7 @@ import moment from "moment";
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Avatar from "../../components/avatar";
 import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 
@@ -104,7 +105,10 @@ export default class Index extends Component {
                                             >
                                                 {
                                                     orderItem.list.map(item => {
-                                                        return <Image className='food_pic' key={item.id} src={item.pic} />
+                                                        return <View className='food_pic' key={item.id}>
+                                                            <Avatar pic={item.pic} text={item.name} />
+                                                        </View>
+                                                        // return <Image className='food_pic' key={item.id} src={item.pic} />
                                                     })
                                                 }
                                             </ScrollView>

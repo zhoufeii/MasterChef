@@ -1,7 +1,6 @@
 import "./index.less";
 
 import {
-  AtAvatar,
   AtBadge,
   AtFloatLayout
 } from "taro-ui";
@@ -11,6 +10,8 @@ import {
   View
 } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
+
+import Avatar from "../avatar/index";
 
 export default class Ball extends Component {
     constructor(props) {
@@ -68,7 +69,7 @@ export default class Ball extends Component {
                         {
                             orderList.map(item => <View className='food_item' key={item._id}>
                                 <View className='food_info'>
-                                    <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
+                                    <Avatar pic={item.pics.length && item.pics[0].url} text={item.name} />
                                     <View className='food_name'>{item.name}</View>
                                 </View>
                                 <View className='food_num_icon_wrapper' >

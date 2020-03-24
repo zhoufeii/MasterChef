@@ -1,12 +1,12 @@
 import "./index.less";
 
-import { AtAvatar } from "taro-ui";
-
 import {
   Text,
   View
 } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
+
+import Avatar from "../avatar/index";
 
 export default class FoodList extends Component {
     constructor(props) {
@@ -21,7 +21,7 @@ export default class FoodList extends Component {
                     const count = itemArray.length && itemArray[0].count
                     return <View className='food_item_wrapper' key={item._id} >
                         <View style={{ display: 'flex' }}>
-                            <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
+                            <Avatar pic={item.pics.length && item.pics[0].url} text={item.name} />
                             <View className='food_item'>
                                 <View className='food_name'>{item.name}</View>
                                 <View className='food_desc'>{item.desc}</View>
