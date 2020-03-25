@@ -1,21 +1,20 @@
 import "./index.less";
 
 import {
-  AtActivityIndicator,
   AtButton,
   AtFloatLayout,
   AtForm,
   AtImagePicker,
   AtInput,
   AtListItem,
-  AtMessage,
   AtRadio,
   AtTextarea
 } from "taro-ui";
 
 import { View } from "@tarojs/components";
-import Taro, { Component } from "@tarojs/taro";
+import { Component } from "@tarojs/taro";
 
+import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 import {
   cloudUploadImage,
@@ -149,10 +148,11 @@ export default class DishInsert extends Component {
             return;
         }
         if (prop === 'pics' && value.length > 3) {
-            Taro.atMessage({
-                message: '最多上传3张图片！',
-                type: 'fail',
-            })
+            showToast('最多上传3张图片！');
+            // Taro.atMessage({
+            //     message: '最多上传3张图片！',
+            //     type: 'fail',
+            // })
             return;
         }
         this.setState({
@@ -164,10 +164,11 @@ export default class DishInsert extends Component {
         if (message.errMsg === 'chooseImage:fail cancel') {
             return;
         }
-        Taro.atMessage({
-            message: message || message.errMsg,
-            type: 'fail',
-        })
+        showToast(message || message.errMsg || '上传图片失败，请联系大熊~');
+        // Taro.atMessage({
+        //     message: message || message.errMsg,
+        //     type: 'fail',
+        // })
     }
 
     onImageClick = (index, file) => {
@@ -233,10 +234,11 @@ export default class DishInsert extends Component {
         const { isOpened = false, loading = false, type = 'dish', sysId = '', sysList = [], sysName = '', sysDesc = '', name = '', desc = '', pics = [], } = this.state;
         return (
             <View className='add'>
-                <AtMessage />
-                {
+                {/* <AtMessage /> */}
+                {/* {
                     loading ? <AtActivityIndicator content='加载中...' mode='center'></AtActivityIndicator> : null
-                }
+                } */}
+                <Loading loading={loading} initialCompleted={false} />
                 {
                     type === 'dish' ? <AtForm
                         onSubmit={this.onDishSubmit.bind(this)}
@@ -279,7 +281,7 @@ export default class DishInsert extends Component {
                             onClick={this.onToggleIsOpen.bind(this)}
                         />
 
-                        <View style={{ padding: '0 20px' }}>
+                        <View style={{ padding: '10px 20px 20px' }}>
                             <AtButton full={false} type='primary' formType='submit'>提交</AtButton>
                             <AtButton full={false} type='secondary' formType='reset'>重置</AtButton>
                         </View>
@@ -303,7 +305,7 @@ export default class DishInsert extends Component {
                                 placeholder='请输入类别的简介'
                             />
 
-                            <View style={{ padding: '0 20px' }}>
+                            <View style={{ padding: '10px 20px 20px' }}>
                                 <AtButton full={false} type='primary' formType='submit'>提交</AtButton>
                                 <AtButton full={false} type='secondary' formType='reset'>重置</AtButton>
                             </View>

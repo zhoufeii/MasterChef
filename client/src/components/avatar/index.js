@@ -9,7 +9,7 @@ export default class Avatar extends Component {
         super(props)
     }
     render() {
-        const { pic = '', text = '' } = this.props;
-        return pic ? <AtAvatar size='large' image={pic} ></AtAvatar> : <AtAvatar size='large' text={text} ></AtAvatar>
+        const { pic = '', text = '', size = 'large' } = this.props;
+        return pic ? <AtAvatar size={size} image={pic} ></AtAvatar> : <AtAvatar size={size} text={text} ></AtAvatar>
     }
 }

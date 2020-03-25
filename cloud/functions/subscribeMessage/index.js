@@ -85,7 +85,7 @@ exports.main = async event => {
       }
       debugger;
       finalText = finalText.substring(0, finalText.length - 1)
-      finalText += `等菜品`
+      finalText = finalText.length === 7 ? finalText += `等菜品` : finalText
       // msgContent = msgContent.length > 20 ? `${msgContent.substring(0, 17)}...` : msgContent
 
       console.log(finalText)
