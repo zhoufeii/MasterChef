@@ -1,0 +1,96 @@
+.foodList {
+    // padding: 20px 20px 30px;
+    color: #6A6A6A;
+
+    .foodList_search_wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 48px;
+
+        .at-search-bar {
+            padding: 18rpx !important;
+        }
+
+    }
+
+    .foods_wrapper {
+        padding-top: 48PX;
+
+        .food_item_wrapper {
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 2px 2px 4px 2px #e3e3e3;
+
+
+            .food_item_top {
+                display: flex;
+                margin-bottom: 10px;
+                padding-bottom: 10px;
+
+                .food_item_info_wrapper {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    width: 100%;
+
+                    .food_item_info {
+                        margin-left: 20px;
+
+                        .item_name {
+                            height: 60px;
+                        }
+
+                        .item_count {
+                            font-size: 24px;
+                            height: 60px;
+                            line-height: 4;
+                        }
+                    }
+
+                    .right_arrow {
+                        width: 60px;
+                        height: 60px;
+                        font-size: 0;
+
+                        image {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                }
+
+            }
+
+            .food_item_bottom {
+                font-size: 24px;
+            }
+
+        }
+    }
+
+
+    .bottom_line_wrapper {
+        margin: 15px 0;
+        color: #a6a6a6;
+        text-align: center;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .bottom_line {
+            background: #a6a6a6;
+            width: 100px;
+            height: 1px;
+        }
+
+        .bottom_line_text {
+            margin: 0 10px;
+        }
+    }
+
+}

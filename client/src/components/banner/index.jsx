@@ -3,9 +3,11 @@ import "./index.less";
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Avatar from "../avatar";
+
 export default class DetailBanner extends Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
 
         }
@@ -16,13 +18,14 @@ export default class DetailBanner extends Component {
     }
 
     render() {
-        const { name = '', avatar = '', backgroundPic = '', tips = '', sellCount = 0, rank = 0 } = this.state;
+        const { userInfo = {} } = this.props;
+        console.log(userInfo)
         return <View className='banner_wrapper'>
             <Image className='banner_background' src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/bear_cut.jpg' />
             <View className='banner'>
                 <View className='banner_header'>
                     <View className='banner_name'>熊家厨房</View>
-                    <Image className='food_count_icon' src="https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/20140731114009_Jd5HE.png" />
+                    <Avatar pic={userInfo.avatarUrl} text={userInfo.nickName} />
                 </View>
                 <View className='banner_tips'>本店只接受可爱小兔点菜</View>
                 <View className='banner_desc'>本店宗旨：熊家厨房，只做兔子爱吃的菜！</View>

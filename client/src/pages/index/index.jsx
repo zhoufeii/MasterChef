@@ -2,7 +2,6 @@ import "./index.less";
 
 import {
   AtActivityIndicator,
-  AtAvatar,
   AtGrid
 } from "taro-ui";
 
@@ -29,7 +28,39 @@ export default class Index extends Component {
       loading: true,
       hasAuth: false,
       userInfo: {},
-      env: getGlobalData('env') || ''
+      env: getGlobalData('env') || '',
+      entranceList: [
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%B1%B3%E9%A5%AD.png',
+          value: '我要吃饭',
+          url: '/pages/menu/index'
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E9%A4%90%E5%85%B7.png',
+          value: '我的订单',
+          url: '/pages/orderList/index'
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%86%B0%E7%AE%B1.png',
+          value: '我的冰箱',
+          url: '/pages/foodList/index'
+        }
+      ],
+      adminList: [{
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+        value: '添加新菜',
+        url: '/pages/add/index?type=dish'
+      },
+      {
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+        value: '添加类别',
+        url: '/pages/add/index?type=sys'
+      },
+      {
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
+        value: '我爱兔兔',
+        url: '/pages/love/index'
+      }]
     }
   }
 
@@ -49,7 +80,6 @@ export default class Index extends Component {
               loading: false
             })
             console.log(err)  // 没有获得授权
-            // _this.getUser()
           })
         } else {
           _this.autoGetUserInfo()
@@ -76,7 +106,7 @@ export default class Index extends Component {
 
   buttonGetUserInfo = (ev) => {
     const _this = this;
-    const { env } = _this.state;
+    const { env, entranceList = [], adminList = [] } = _this.state;
     const { userInfo = {} } = ev.detail;
     Taro.login({
       success(res) {
@@ -89,9 +119,8 @@ export default class Index extends Component {
               env
             }
           }).then(res => {
+            console.log('======buttonGetUserInfo====')
             console.log(res)
-
-            // const storageUserId = res && res.result && res.result.data && res.result.data[0] && res.result.data[0]._id || '';
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
               setGlobalData('USER_TYPE', OTHERS)
@@ -115,15 +144,9 @@ export default class Index extends Component {
                 loading: false,
                 hasAuth: true,
                 userInfo: userList[0],
+                entranceList: [...entranceList, ...adminList]
               })
             }
-
-            // try {
-            //   Taro.setStorageSync('USER_ID', storageUserId)
-            // } catch (e) {
-            //   console.log(e)
-            // }
-
           }).catch(err => {
             console.log(err)
           })
@@ -139,7 +162,7 @@ export default class Index extends Component {
     const _this = this;
     Taro.getUserInfo({
       success(res) {
-        const { userInfo = {}, } = res;
+        const { userInfo = {}, } = res; // 这里获取到的userInfo是微信返回的，没有USER_TYPE
         _this.setState({
           hasAuth: true,
           userInfo,
@@ -153,7 +176,7 @@ export default class Index extends Component {
 
   getUser = () => {
     const _this = this;
-    const { env } = _this.state;
+    const { env, entranceList = [], adminList = [] } = _this.state;
     Taro.cloud.callFunction({
       name: 'users',
       data: {
@@ -163,11 +186,14 @@ export default class Index extends Component {
     }).then(res => {
       const userList = res.result && res.result.data || [];
       if (userList.length) {
+        console.log('========userList[0]======')
+        console.log(userList[0])
         setGlobalData('USER_TYPE', userList[0].USER_TYPE)
         _this.setState({
           loading: false,
           hasAuth: true,
           userInfo: userList[0],
+          entranceList: [...entranceList, ...adminList]
         })
       }
     }).catch(err => {
@@ -186,25 +212,18 @@ export default class Index extends Component {
         userInfo
       }
     }).then(res => {
-      // const userList = res.result && res.result.data || [];
-      // if (userList.length) {
       _this.getUser()
-      // _this.setState({
-      //   loading: false,
-      //   hasAuth: true,
-      //   userInfo: { ...userInfo },
-      // })
-      // }
     }).catch(err => {
       console.log(err)
     })
   }
 
   render() {
-    const { userInfo = {}, hasAuth = false, loading = true, } = this.state;
+    const { userInfo = {}, hasAuth = false, loading = true, entranceList = [], adminList = [] } = this.state;
+
     return (
       <View className='index'>
-        <Banner />
+        <Banner userInfo={userInfo} />
         <View className='loading_wrapper'>
           {
             loading ? <AtActivityIndicator content='加载中...' ></AtActivityIndicator> : null
@@ -218,49 +237,13 @@ export default class Index extends Component {
             <View className='user_info_container'>
               <View className='user_info_item'>
                 {
-                  userInfo.avatarUrl ? <AtAvatar image={userInfo.avatarUrl}></AtAvatar> : null
-                }
-              </View>
-              <View className='user_info_item'>
-                {
                   userInfo.nickName ? <Text>你好，{userInfo.nickName}</Text> : null
                 }
               </View>
             </View>
             <AtGrid onClick={item => {
               this.navigateTo(item.url)
-            }} data={
-              [
-                {
-                  image: 'https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png',
-                  value: '我要点菜',
-                  url: '/pages/menu/index'
-                },
-                {
-                  image: 'https://img20.360buyimg.com/jdphoto/s72x72_jfs/t15151/308/1012305375/2300/536ee6ef/5a411466N040a074b.png',
-                  value: '添加类别',
-                  url: '/pages/add/index?type=sys'
-                },
-                {
-                  image: 'https://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-                  value: '添加新菜',
-                  url: '/pages/add/index?type=dish'
-                },
-                {
-                  image: 'https://img12.360buyimg.com/jdphoto/s72x72_jfs/t10660/330/203667368/1672/801735d7/59c85643N31e68303.png',
-                  value: '我的订单',
-                  url: '/pages/orderList/index'
-                },
-                {
-                  image: 'https://img14.360buyimg.com/jdphoto/s72x72_jfs/t17251/336/1311038817/3177/72595a07/5ac44618Na1db7b09.png',
-                  value: '领京豆'
-                },
-                {
-                  image: 'https://img30.360buyimg.com/jdphoto/s72x72_jfs/t5770/97/5184449507/2423/294d5f95/595c3b4dNbc6bc95d.png',
-                  value: '手机馆'
-                }
-              ]
-            } />
+            }} data={entranceList} />
           </View> : null
         }
       </View>

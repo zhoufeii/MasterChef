@@ -46,7 +46,7 @@ export default class Index extends Component {
                     <View className='success_tips'>{type === 1 ? '您的菜品将在一小时之内送达！' : '您的菜品将在预定时间内送达！'}</View>
                 </View>
                 <AtButton full={false} type='primary' onClick={this.navigateTo.bind(this, `/pages/orderDetail/index?id=${id}`)}>订单详情</AtButton>
-                <AtButton full={false} type='secondary' >查看我的订单</AtButton>
+                <AtButton full={false} type='secondary' onClick={this.navigateTo.bind(this, `/pages/orderList/index`)}>查看我的订单</AtButton>
             </View>
         )
     }

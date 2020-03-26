@@ -2,7 +2,6 @@ import "./index.less";
 
 import moment from "moment";
 import {
-  AtAvatar,
   AtFloatLayout,
   AtModal
 } from "taro-ui";
@@ -10,6 +9,7 @@ import {
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
+import Avatar from "../../components/avatar";
 import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 import { showToast } from "../../utils/index";
@@ -17,7 +17,7 @@ import { showToast } from "../../utils/index";
 function format(date) {
     return date.format('YYYY年MM月DD日 HH:mm')
 }
-const TEMPLATE_ID = 'TSNZjgYEW2qm9ZDYFXnL5r5uKU-ZlDv7-2PK3N2EaO0'
+const TEMPLATE_ID = 'TSNZjgYEW2qm9ZDYFXnL5qm6rwGCvO3VQ_cimHIYR6E'
 const CALENDAR_LOCALE = {
     sameDay: '[今天]',
     nextDay: '[明天]',
@@ -207,7 +207,7 @@ export default class Index extends Component {
             note,
         }
         if (selectCoupon) {
-            Taro.requestSubscribeMessage({
+            Taro.requestSubscribeMessage({  // 必须在点击事件中调用！！不能放在回调函数中！！
                 tmplIds: [TEMPLATE_ID], // 此处可填写多个模板 ID，但低版本微信不兼容只能授权一个
                 success(res) {
                     console.log('已授权接收订阅消息')
@@ -296,10 +296,10 @@ export default class Index extends Component {
                         {
                             orderList.map(item => <View key={item._id} className='item_wrapper'>
                                 <View className='item_info'>
-                                    <AtAvatar size='large' image={item.pics.length && item.pics[0].url || ''} ></AtAvatar>
+                                    <Avatar pic={item.pics.length && item.pics[0].url || ''} text={item.name} />
                                     <View className='food_item'>
                                         <View className='food_name'>{item.name}</View>
-                                        <View className='food_desc'>{item.desc}</View>
+                                        <View className='food_desc'>大熊说：{item.desc}</View>
                                     </View>
                                 </View>
                                 <View className='item_price'>
