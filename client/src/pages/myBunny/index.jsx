@@ -3,7 +3,7 @@ import "./index.less";
 import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
-export default class Index extends Component {
+export default class MyBunny extends Component {
 
     componentWillMount() { }
 
@@ -17,7 +17,7 @@ export default class Index extends Component {
     componentDidHide() { }
 
     config = {
-        navigationBarTitleText: '登录/注册'
+        navigationBarTitleText: '我爱兔兔'
     }
 
     navigateTo = (url) => {
@@ -28,7 +28,7 @@ export default class Index extends Component {
 
     render() {
         return (
-            <View className='login'>
+            <View className='myBunny'>
 
             </View>
         )
