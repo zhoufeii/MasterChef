@@ -299,7 +299,7 @@ export default class Index extends Component {
                                     <Avatar pic={item.pics.length && item.pics[0].url || ''} text={item.name} />
                                     <View className='food_item'>
                                         <View className='food_name'>{item.name}</View>
-                                        <View className='food_desc'>{item.desc}</View>
+                                        <View className='food_desc'>大熊说：{item.desc}</View>
                                     </View>
                                 </View>
                                 <View className='item_price'>

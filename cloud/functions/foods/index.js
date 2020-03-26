@@ -40,6 +40,7 @@ exports.main = async event => {
     }
 
     async function getFoods(event) {
-        return await db.collection(`foods`).get()
+        const { pageNo = 0, pageSize = 10 } = event
+        return await db.collection(`foods`).skip(pageNo * pageSize).limit(pageSize).get()
     }
 }

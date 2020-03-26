@@ -28,7 +28,39 @@ export default class Index extends Component {
       loading: true,
       hasAuth: false,
       userInfo: {},
-      env: getGlobalData('env') || ''
+      env: getGlobalData('env') || '',
+      entranceList: [
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%B1%B3%E9%A5%AD.png',
+          value: '我要吃饭',
+          url: '/pages/menu/index'
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E9%A4%90%E5%85%B7.png',
+          value: '我的订单',
+          url: '/pages/orderList/index'
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%86%B0%E7%AE%B1.png',
+          value: '我的冰箱',
+          url: '/pages/foodList/index'
+        }
+      ],
+      adminList: [{
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+        value: '添加新菜',
+        url: '/pages/add/index?type=dish'
+      },
+      {
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+        value: '添加类别',
+        url: '/pages/add/index?type=sys'
+      },
+      {
+        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
+        value: '我爱兔兔',
+        url: '/pages/love/index'
+      }]
     }
   }
 
@@ -48,7 +80,6 @@ export default class Index extends Component {
               loading: false
             })
             console.log(err)  // 没有获得授权
-            // _this.getUser()
           })
         } else {
           _this.autoGetUserInfo()
@@ -75,7 +106,7 @@ export default class Index extends Component {
 
   buttonGetUserInfo = (ev) => {
     const _this = this;
-    const { env } = _this.state;
+    const { env, entranceList = [], adminList = [] } = _this.state;
     const { userInfo = {} } = ev.detail;
     Taro.login({
       success(res) {
@@ -88,9 +119,8 @@ export default class Index extends Component {
               env
             }
           }).then(res => {
+            console.log('======buttonGetUserInfo====')
             console.log(res)
-
-            // const storageUserId = res && res.result && res.result.data && res.result.data[0] && res.result.data[0]._id || '';
             const userList = res.result && res.result.data || [];
             if (!userList.length) {
               setGlobalData('USER_TYPE', OTHERS)
@@ -114,15 +144,9 @@ export default class Index extends Component {
                 loading: false,
                 hasAuth: true,
                 userInfo: userList[0],
+                entranceList: [...entranceList, ...adminList]
               })
             }
-
-            // try {
-            //   Taro.setStorageSync('USER_ID', storageUserId)
-            // } catch (e) {
-            //   console.log(e)
-            // }
-
           }).catch(err => {
             console.log(err)
           })
@@ -138,7 +162,7 @@ export default class Index extends Component {
     const _this = this;
     Taro.getUserInfo({
       success(res) {
-        const { userInfo = {}, } = res;
+        const { userInfo = {}, } = res; // 这里获取到的userInfo是微信返回的，没有USER_TYPE
         _this.setState({
           hasAuth: true,
           userInfo,
@@ -152,7 +176,7 @@ export default class Index extends Component {
 
   getUser = () => {
     const _this = this;
-    const { env } = _this.state;
+    const { env, entranceList = [], adminList = [] } = _this.state;
     Taro.cloud.callFunction({
       name: 'users',
       data: {
@@ -162,11 +186,14 @@ export default class Index extends Component {
     }).then(res => {
       const userList = res.result && res.result.data || [];
       if (userList.length) {
+        console.log('========userList[0]======')
+        console.log(userList[0])
         setGlobalData('USER_TYPE', userList[0].USER_TYPE)
         _this.setState({
           loading: false,
           hasAuth: true,
           userInfo: userList[0],
+          entranceList: [...entranceList, ...adminList]
         })
       }
     }).catch(err => {
@@ -185,22 +212,15 @@ export default class Index extends Component {
         userInfo
       }
     }).then(res => {
-      // const userList = res.result && res.result.data || [];
-      // if (userList.length) {
       _this.getUser()
-      // _this.setState({
-      //   loading: false,
-      //   hasAuth: true,
-      //   userInfo: { ...userInfo },
-      // })
-      // }
     }).catch(err => {
       console.log(err)
     })
   }
 
   render() {
-    const { userInfo = {}, hasAuth = false, loading = true, } = this.state;
+    const { userInfo = {}, hasAuth = false, loading = true, entranceList = [], adminList = [] } = this.state;
+
     return (
       <View className='index'>
         <Banner userInfo={userInfo} />
@@ -221,64 +241,9 @@ export default class Index extends Component {
                 }
               </View>
             </View>
-            {/* <View className='btn_wrapper'>
-              <View className='toMenuWrapper'>
-                <Avatar size='small' pic='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%B1%B3%E9%A5%AD.png' text='吃' />
-                <View className='toMenuBtn'>我要吃饭</View>
-              </View>
-              <View className='toOrderListWrapper'>
-                <Avatar size='small' pic='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E9%A4%90%E5%85%B7.png' text='订' />
-                <View className='toOrderListBtn'>我的订单</View>
-              </View>
-              <View className='toAddSysWrapper'>
-                <Avatar size='small' pic='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png' text='类' />
-                <View className='toAddSysBtn'>添加类别</View>
-              </View>
-              <View className='toAddFoodWrapper'>
-                <Avatar size='small' pic='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png' text='菜' />
-                <View className='toAddFoodBtn'>添加新菜</View>
-              </View>
-              <View className='toFoodListWrapper'>
-                <Avatar size='small' pic='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png' text='全' />
-                <View className='toFoodListBtn'>所有菜品</View>
-              </View>
-            </View> */}
             <AtGrid onClick={item => {
               this.navigateTo(item.url)
-            }} data={
-              [
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%B1%B3%E9%A5%AD.png',
-                  value: '我要吃饭',
-                  url: '/pages/menu/index'
-                },
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E9%A4%90%E5%85%B7.png',
-                  value: '我的订单',
-                  url: '/pages/orderList/index'
-                },
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%86%B0%E7%AE%B1.png',
-                  value: '所有菜品',
-                  url: '/pages/foodList/index'
-                },
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
-                  value: '添加新菜',
-                  url: '/pages/add/index?type=dish'
-                },
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
-                  value: '添加类别',
-                  url: '/pages/add/index?type=sys'
-                },
-                {
-                  image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
-                  value: '我爱兔兔',
-                  url: '/pages/love/index'
-                },
-              ]
-            } />
+            }} data={entranceList} />
           </View> : null
         }
       </View>

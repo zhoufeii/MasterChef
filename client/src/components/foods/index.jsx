@@ -8,7 +8,7 @@ import { Component } from "@tarojs/taro";
 
 import Avatar from "../avatar/index";
 
-export default class FoodList extends Component {
+export default class Foods extends Component {
     constructor(props) {
         super(props)
     }

@@ -4,7 +4,7 @@ import { View } from "@tarojs/components";
 import { Component } from "@tarojs/taro";
 
 import CartAndPay from "../../components/cartAndPay";
-import FoodList from "../../components/foodList";
+import Foods from "../../components/foods";
 import Loading from "../../components/loading";
 import { getGlobalData } from "../../utils/globalData";
 
@@ -196,7 +196,7 @@ export default class DetailBanner extends Component {
           upperThreshold={Threshold}
           onScrollToLower={this.onScrollToLower.bind(this)} // 使用箭头函数的时候 可以这样写 `onScrollToUpper={this.onScrollToUpper}`
         >
-          <FoodList
+          <Foods
             list={currentFoodList}
             orderList={orderList}
             onFoodItemAdd={this.onFoodItemAdd}

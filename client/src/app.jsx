@@ -36,7 +36,8 @@ class App extends Component {
       'pages/note/index',
       'pages/success/index',
       'pages/orderDetail/index',
-      'pages/orderList/index'
+      'pages/orderList/index',
+      'pages/foodList/index'
     ],
     window: {
       backgroundTextStyle: 'light',

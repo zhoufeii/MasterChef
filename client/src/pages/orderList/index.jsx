@@ -94,7 +94,7 @@ export default class Index extends Component {
                                             <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
                                         </View>
                                     </View>
-                                    <View className='order_item_mid'>
+                                    <View className='order_item_mid' onClick={this.navigateTo.bind(this, `/pages/orderDetail/index?id=${orderItem._id}`)}>
                                         <View className='foods_wrapper'>
                                             <ScrollView
                                                 className='food_pic_wrapper'
@@ -105,10 +105,9 @@ export default class Index extends Component {
                                             >
                                                 {
                                                     orderItem.list.map(item => {
-                                                        return <View className='food_pic' key={item.id}>
+                                                        return <View className='food_pic' key={item.id} >
                                                             <Avatar pic={item.pic} text={item.name} />
                                                         </View>
-                                                        // return <Image className='food_pic' key={item.id} src={item.pic} />
                                                     })
                                                 }
                                             </ScrollView>
