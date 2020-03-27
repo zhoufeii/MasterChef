@@ -13,6 +13,7 @@ exports.main = async event => {
 
   cloud.init({ env })
   const db = cloud.database({ env })
+  const _ = db.command;
 
   switch (event.action) {
     case 'addOrder': {
@@ -32,6 +33,19 @@ exports.main = async event => {
   async function addOrder(event) {
     const { deliverDate = '', list = [], note = '' } = event;
     const { OPENID } = cloud.getWXContext()
+    console.log(list)
+    list.map(item => {
+      console.log(item)
+      cloud.callFunction({
+        name: 'foods',
+        data: {
+          action: 'updateFoodStar',
+          env,
+          id: item.id,
+        }
+      }).then(res => console.log(`${item.name} 自增成功`))
+        .catch(err => console.log(err))
+    })
 
     return await db.collection(`orders`).add({
       data: {

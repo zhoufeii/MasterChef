@@ -16,6 +16,7 @@ import {
   getGlobalData,
   setGlobalData
 } from "../../utils/globalData";
+import { showToast } from "../../utils/index";
 
 const ADMIN = 1;
 const RABBIT = 2;
@@ -33,34 +34,40 @@ export default class Index extends Component {
         {
           image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%B1%B3%E9%A5%AD.png',
           value: '我要吃饭',
-          url: '/pages/menu/index'
+          url: '/pages/menu/index',
+          role: OTHERS,
         },
         {
           image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E9%A4%90%E5%85%B7.png',
           value: '我的订单',
-          url: '/pages/orderList/index'
+          url: '/pages/orderList/index',
+          role: OTHERS,
         },
         {
           image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%86%B0%E7%AE%B1.png',
           value: '我的冰箱',
-          url: '/pages/foodList/index'
+          url: '/pages/foodList/index',
+          role: OTHERS,
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+          value: '添加新菜',
+          url: '/pages/add/index?type=dish',
+          role: RABBIT,
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
+          value: '添加类别',
+          url: '/pages/add/index?type=sys',
+          role: RABBIT,
+        },
+        {
+          image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
+          value: '我爱兔兔',
+          url: '/pages/love/index',
+          role: RABBIT,
         }
       ],
-      adminList: [{
-        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
-        value: '添加新菜',
-        url: '/pages/add/index?type=dish'
-      },
-      {
-        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E5%A4%A7%E5%8E%A8%E5%B8%BD.png',
-        value: '添加类别',
-        url: '/pages/add/index?type=sys'
-      },
-      {
-        image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
-        value: '我爱兔兔',
-        url: '/pages/love/index'
-      }]
     }
   }
 
@@ -98,7 +105,15 @@ export default class Index extends Component {
     navigationBarTitleText: '首页'
   }
 
-  navigateTo = (url) => {
+  navigateTo = (url, role = OTHERS) => {
+
+    const USER_TYPE = getGlobalData('USER_TYPE')
+    console.log(USER_TYPE)
+    console.log(role)
+    if (USER_TYPE > role) {
+      showToast('没有权限');
+      return;
+    }
     Taro.navigateTo({
       url
     })
@@ -106,7 +121,7 @@ export default class Index extends Component {
 
   buttonGetUserInfo = (ev) => {
     const _this = this;
-    const { env, entranceList = [], adminList = [] } = _this.state;
+    const { env, entranceList = [] } = _this.state;
     const { userInfo = {} } = ev.detail;
     Taro.login({
       success(res) {
@@ -144,7 +159,6 @@ export default class Index extends Component {
                 loading: false,
                 hasAuth: true,
                 userInfo: userList[0],
-                entranceList: [...entranceList, ...adminList]
               })
             }
           }).catch(err => {
@@ -176,7 +190,7 @@ export default class Index extends Component {
 
   getUser = () => {
     const _this = this;
-    const { env, entranceList = [], adminList = [] } = _this.state;
+    const { env, entranceList = [], } = _this.state;
     Taro.cloud.callFunction({
       name: 'users',
       data: {
@@ -193,7 +207,6 @@ export default class Index extends Component {
           loading: false,
           hasAuth: true,
           userInfo: userList[0],
-          entranceList: [...entranceList, ...adminList]
         })
       }
     }).catch(err => {
@@ -219,7 +232,7 @@ export default class Index extends Component {
   }
 
   render() {
-    const { userInfo = {}, hasAuth = false, loading = true, entranceList = [], adminList = [] } = this.state;
+    const { userInfo = {}, hasAuth = false, loading = true, entranceList = [] } = this.state;
 
     return (
       <View className='index'>
@@ -242,7 +255,7 @@ export default class Index extends Component {
               </View>
             </View>
             <AtGrid onClick={item => {
-              this.navigateTo(item.url)
+              this.navigateTo(item.url, item.role)
             }} data={entranceList} />
           </View> : null
         }

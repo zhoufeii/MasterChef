@@ -31,13 +31,14 @@ class App extends Component {
       'pages/index/index',
       'pages/menu/index',
       'pages/add/index',
-      'pages/login/index',
       'pages/confirm/index',
       'pages/note/index',
       'pages/success/index',
       'pages/orderDetail/index',
       'pages/orderList/index',
-      'pages/foodList/index'
+      'pages/foodList/index',
+      'pages/foodDetail/index',
+      'pages/myBunny/index'
     ],
     window: {
       backgroundTextStyle: 'light',
