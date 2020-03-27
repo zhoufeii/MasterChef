@@ -41,13 +41,25 @@
                         margin-left: 20px;
 
                         .item_name {
-                            height: 60px;
+                            height: 80px;
                         }
 
                         .item_count {
+                            display: flex;
+                            align-items: center;
                             font-size: 24px;
-                            height: 60px;
-                            line-height: 4;
+
+                            .star {
+                                width: 30px;
+                                height: 30px;
+                                margin-right: 5px;
+                                font-size: 0;
+
+                                image {
+                                    width: 100%;
+                                    height: 100%;
+                                }
+                            }
                         }
                     }
 
@@ -62,13 +74,46 @@
                         }
                     }
                 }
-
             }
 
             .food_item_bottom {
                 font-size: 24px;
             }
+        }
 
+        .empty_image {
+            text-align: center;
+            margin: 10vh auto 20px;
+
+            image {
+                width: 240px;
+                height: 240px;
+            }
+        }
+
+        .empty_title {
+            text-align: center;
+        }
+
+        .empty_text_wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .empty_text {
+                color: #6190E8;
+            }
+
+            .right_arrow {
+                width: 60px;
+                height: 60px;
+                font-size: 0;
+
+                image {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
         }
     }
 

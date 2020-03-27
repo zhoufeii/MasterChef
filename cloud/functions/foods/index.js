@@ -13,14 +13,22 @@ exports.main = async event => {
 
     cloud.init({ env })
     const db = cloud.database({ env })
+    const _ = db.command;
 
     switch (event.action) {
         case 'addFood': {
             return addFood(event)
         }
+        case 'updateFood': {
+            return updateFood(event)
+        }
+        case 'updateFoodStar': {
+            return updateFoodStar(event)
+        }
         case 'getFoods': {
             return getFoods(event)
         }
+
         default: {
             return
         }
@@ -39,8 +47,47 @@ exports.main = async event => {
         })
     }
 
+    async function updateFood(event) {
+        const { id = '', name = '', desc = '', sysId = '', sysName = '', pics = [] } = event;
+        const data = {
+            name,
+            desc,
+            sysId,
+            sysName,
+            pics,
+        }
+
+        for (prop in data) {
+            if (!data[prop]) {
+                delete data[prop]
+            }
+        }
+
+        if (!pics.length) {
+            delete data.pics
+        }
+        return await db.collection(`foods`).where({
+            _id: id
+        }).update({ data })
+    }
+
+    async function updateFoodStar(event) {
+        const { id = '' } = event;
+        return await db.collection(`foods`).doc(id).update({
+            data: {
+                star: _.inc(1)
+            }
+        })
+    }
+
     async function getFoods(event) {
-        const { pageNo = 0, pageSize = 10 } = event
-        return await db.collection(`foods`).skip(pageNo * pageSize).limit(pageSize).get()
+        const { name = '', pageNo = 0, pageSize = 10 } = event
+        return await db.collection(`foods`).where(_.or([{
+            name: db.RegExp({
+                regexp: '.*' + name,
+                options: 'i',
+            })
+        }
+        ])).orderBy('star', 'desc').skip(pageNo * pageSize).limit(pageSize).get()
     }
 }
