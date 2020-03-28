@@ -22,14 +22,11 @@ import {
   showToast
 } from "../../utils/index";
 
-// import DetailBanner from "../../components/detailBanner";
-// import DetailList from "../../components/DetailList";
-
 export default class DishInsert extends Component {
     constructor() {
         super();
         this.state = {
-            type: this.$router.params.type,
+            type: this.$router.params.type, // 添加菜品/添加类别
             sysId: '',
             sysList: [],
             sysName: '',
@@ -149,10 +146,6 @@ export default class DishInsert extends Component {
         }
         if (prop === 'pics' && value.length > 3) {
             showToast('最多上传3张图片！');
-            // Taro.atMessage({
-            //     message: '最多上传3张图片！',
-            //     type: 'fail',
-            // })
             return;
         }
         this.setState({
@@ -165,10 +158,6 @@ export default class DishInsert extends Component {
             return;
         }
         showToast(message || message.errMsg || '上传图片失败，请联系大熊~');
-        // Taro.atMessage({
-        //     message: message || message.errMsg,
-        //     type: 'fail',
-        // })
     }
 
     onImageClick = (index, file) => {

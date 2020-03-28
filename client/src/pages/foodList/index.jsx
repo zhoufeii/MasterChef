@@ -121,7 +121,7 @@ export default class Index extends Component {
                     initialCompleted && list.length ? <View className='foods_wrapper'>
                         {
                             list.map(item => {
-                                return <View key={item._id} className='food_item_wrapper'>
+                                return <View key={item._id} className='food_item_wrapper' onClick={this.navigateTo.bind(this, `/pages/edit/index?type=dish&id=${item._id}`)}>
                                     <View className='food_item_top'>
                                         <Avatar size='large' text={item.name} pic={item.pics && item.pics.length && item.pics[0] && item.pics[0].url} />
                                         <View className='food_item_info_wrapper'>
@@ -156,7 +156,7 @@ export default class Index extends Component {
                             <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/empty.png' />
                         </View>
                         <View className='empty_title'>这个菜还没有被收录到熊家厨房</View>
-                        <View className='empty_text_wrapper'>
+                        <View className='empty_text_wrapper' onClick={this.navigateTo.bind(this, '/pages/add/index?type=dish')}>
                             <View className='empty_text'>马上添加</View>
                             <View className='right_arrow'>
                                 <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />

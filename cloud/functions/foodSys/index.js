@@ -21,6 +21,9 @@ exports.main = async event => {
     case 'getFoodSys': {
       return getFoodSys(event)
     }
+    case 'getFoodSysById': {
+      return getFoodSysById(event)
+    }
     case 'getFoodsBySys': {
       return getFoodsBySys(event)
     }
@@ -41,6 +44,11 @@ exports.main = async event => {
 
   async function getFoodSys(event) {
     return await db.collection(`sys`).get()
+  }
+
+  async function getFoodSysById(event) {
+    const { id = '' } = event;
+    return await db.collection(`sys`).doc(id).get()
   }
 
   async function getFoodsBySys(event) {

@@ -25,6 +25,9 @@ exports.main = async event => {
         case 'updateFoodStar': {
             return updateFoodStar(event)
         }
+        case 'getFoodById': {
+            return getFoodById(event)
+        }
         case 'getFoods': {
             return getFoods(event)
         }
@@ -78,6 +81,11 @@ exports.main = async event => {
                 star: _.inc(1)
             }
         })
+    }
+
+    async function getFoodById(event) {
+        const { id = '' } = event
+        return await db.collection(`foods`).doc(id).get()
     }
 
     async function getFoods(event) {
