@@ -106,10 +106,7 @@ export default class Index extends Component {
   }
 
   navigateTo = (url, role = OTHERS) => {
-
     const USER_TYPE = getGlobalData('USER_TYPE')
-    console.log(USER_TYPE)
-    console.log(role)
     if (USER_TYPE > role) {
       showToast('没有权限');
       return;
