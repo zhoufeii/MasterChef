@@ -22,6 +22,7 @@ export default class Index extends Component {
             USER_TYPE: getGlobalData('USER_TYPE') || '',
             RABBIT: getGlobalData('RABBIT') || '',
             name: '',
+            list: [],
             pageNo: 0,
             pageSize: 10,
             noMore: false,
@@ -33,9 +34,6 @@ export default class Index extends Component {
     componentWillMount() { }
 
     componentDidMount() {
-        const { USER_TYPE, RABBIT } = this.state;
-        console.log(USER_TYPE)
-        console.log(RABBIT)
         this.handleGetFoodList()
     }
 
@@ -79,7 +77,6 @@ export default class Index extends Component {
                     initialCompleted: true
                 })
             }
-
         }).catch(err => {
             showToast('获取菜品失败，请联系大熊！')
         })

@@ -190,7 +190,7 @@ export default class Index extends Component {
 
     confirmOrder = () => {
         const _this = this;
-        const { selectCoupon = false, deliverDate = '', note = '', orderList = [], env } = _this.state;
+        const { selectCoupon = false, deliverDate = '', note = '', orderList = [], env, USER_TYPE, OTHERS } = _this.state;
 
         const list = orderList.map(item => {
             return {
@@ -206,7 +206,7 @@ export default class Index extends Component {
             list,
             note,
         }
-        if (selectCoupon) {
+        if (selectCoupon && USER_TYPE < OTHERS) {
             Taro.requestSubscribeMessage({  // 必须在点击事件中调用！！不能放在回调函数中！！
                 tmplIds: [TEMPLATE_ID], // 此处可填写多个模板 ID，但低版本微信不兼容只能授权一个
                 success(res) {
@@ -258,6 +258,8 @@ export default class Index extends Component {
                     })
                 }
             })
+        } else if (USER_TYPE < OTHERS) {
+            showToast('可爱小兔勾选一下优惠券就可以下单啦！')
         } else {
             this.setState({
                 showTipsModal: true

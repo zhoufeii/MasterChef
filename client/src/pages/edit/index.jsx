@@ -62,6 +62,24 @@ export default class DishEdit extends Component {
         navigationBarTitleText: '编辑类别/新菜'
     }
 
+    backTo = (delta = 1) => {
+        const pages = getCurrentPages();
+        const FoodListComponent = pages[getCurrentPages().length - 2]
+        FoodListComponent.$component.setState({
+            name: '',
+            list: [],
+            pageNo: 0,
+            pageSize: 10,
+            noMore: false,
+            loading: true,
+            initialCompleted: false
+        }, () => {
+            FoodListComponent.$component.handleGetFoodList()
+            Taro.navigateBack({ delta })
+        })
+
+    }
+
     upload = (dir, event, callback) => {
         const { env } = this.state;
         this.setState({
@@ -84,6 +102,7 @@ export default class DishEdit extends Component {
             name: 'foods',
             data: { id, action: 'getFoodById', env },
         }).then(res => {
+            console.log('=======res=====')
             console.log(res)
             const { name = '', desc = '', pics = [], sysId = '', sysName = '' } = res.result.data;
             this.setState({
@@ -172,7 +191,7 @@ export default class DishEdit extends Component {
     }
 
     onDishSubmit = () => {
-        const { name = '', desc = '', sysId = '', sysName = '', pics = [] } = this.state;
+        const { env = '', id = '', name = '', desc = '', sysId = '', sysName = '', pics = [] } = this.state;
         const data = {
             name,
             desc,
@@ -191,6 +210,22 @@ export default class DishEdit extends Component {
 
         this.setState({
             loading: true
+        })
+
+        Taro.cloud.callFunction({
+            name: 'foods',
+            data: { ...data, action: 'updateFood', env, id },
+        }).then(res => {
+            showToast('修改菜品成功！', 'success')
+            setTimeout(() => {
+                this.backTo()
+            }, 1000)
+        }).catch(err => {
+            showToast('修改菜品失败，请联系大熊！')
+        })
+
+        this.setState({
+            loading: false
         })
     }
 
@@ -223,9 +258,7 @@ export default class DishEdit extends Component {
                 } */}
                 <Loading loading={loading} initialCompleted={false} />
                 {
-                    type === 'dish' ? <AtForm
-                        onSubmit={this.onDishSubmit.bind(this)}
-                    >
+                    type === 'dish' ? <AtForm onSubmit={this.onDishSubmit.bind(this)} >
                         <AtInput
                             name='name'
                             title='菜名'

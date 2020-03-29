@@ -60,18 +60,15 @@ exports.main = async event => {
             pics,
         }
 
-        for (prop in data) {
-            if (!data[prop]) {
-                delete data[prop]
-            }
-        }
+        // for (prop in data) {
+        //     if (!data[prop]) {
+        //         delete data[prop]
+        //     }
+        // }
 
-        if (!pics.length) {
-            delete data.pics
-        }
-        return await db.collection(`foods`).where({
-            _id: id
-        }).update({ data })
+        console.log('====data====');
+        console.log(data)
+        return await db.collection('foods').doc(id).update({ data })
     }
 
     async function updateFoodStar(event) {
@@ -85,7 +82,7 @@ exports.main = async event => {
 
     async function getFoodById(event) {
         const { id = '' } = event
-        return await db.collection(`foods`).doc(id).get()
+        return await db.collection('foods').doc(id).get()
     }
 
     async function getFoods(event) {
