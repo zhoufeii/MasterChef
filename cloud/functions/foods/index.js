@@ -25,6 +25,9 @@ exports.main = async event => {
         case 'updateFoodStar': {
             return updateFoodStar(event)
         }
+        case 'getFoodById': {
+            return getFoodById(event)
+        }
         case 'getFoods': {
             return getFoods(event)
         }
@@ -57,18 +60,15 @@ exports.main = async event => {
             pics,
         }
 
-        for (prop in data) {
-            if (!data[prop]) {
-                delete data[prop]
-            }
-        }
+        // for (prop in data) {
+        //     if (!data[prop]) {
+        //         delete data[prop]
+        //     }
+        // }
 
-        if (!pics.length) {
-            delete data.pics
-        }
-        return await db.collection(`foods`).where({
-            _id: id
-        }).update({ data })
+        console.log('====data====');
+        console.log(data)
+        return await db.collection('foods').doc(id).update({ data })
     }
 
     async function updateFoodStar(event) {
@@ -78,6 +78,11 @@ exports.main = async event => {
                 star: _.inc(1)
             }
         })
+    }
+
+    async function getFoodById(event) {
+        const { id = '' } = event
+        return await db.collection('foods').doc(id).get()
     }
 
     async function getFoods(event) {

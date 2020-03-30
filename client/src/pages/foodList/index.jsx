@@ -19,7 +19,10 @@ export default class Index extends Component {
         super();
         this.state = {
             env: getGlobalData('env') || '',
+            USER_TYPE: getGlobalData('USER_TYPE') || '',
+            RABBIT: getGlobalData('RABBIT') || '',
             name: '',
+            list: [],
             pageNo: 0,
             pageSize: 10,
             noMore: false,
@@ -45,19 +48,20 @@ export default class Index extends Component {
     }
 
     navigateTo = (url) => {
-        Taro.navigateTo({
-            url
-        })
+        const { USER_TYPE, RABBIT } = this.state;
+        if (USER_TYPE <= RABBIT) {
+            Taro.navigateTo({
+                url
+            })
+        }
     }
 
     handleGetFoodList = () => {
         const { env, name = '', pageNo, pageSize, list = [] } = this.state;
-        console.log({ name, pageNo, pageSize })
         Taro.cloud.callFunction({
             name: 'foods',
             data: { action: 'getFoods', name, pageNo, pageSize, env },
         }).then(res => {
-            console.log(res)
             if (!res.result.data.length) {
                 this.setState({
                     loading: false,
@@ -73,7 +77,6 @@ export default class Index extends Component {
                     initialCompleted: true
                 })
             }
-
         }).catch(err => {
             showToast('获取菜品失败，请联系大熊！')
         })
@@ -96,7 +99,7 @@ export default class Index extends Component {
     }
 
     render() {
-        const { list = [], loading = true, name = '', initialCompleted = false } = this.state;
+        const { list = [], loading = true, name = '', initialCompleted = false, USER_TYPE, RABBIT } = this.state;
         return (
             <View className='foodList'>
                 <Loading loading={loading} initialCompleted={false} />
@@ -121,7 +124,7 @@ export default class Index extends Component {
                     initialCompleted && list.length ? <View className='foods_wrapper'>
                         {
                             list.map(item => {
-                                return <View key={item._id} className='food_item_wrapper'>
+                                return <View key={item._id} className='food_item_wrapper' onClick={this.navigateTo.bind(this, `/pages/edit/index?type=dish&id=${item._id}`)}>
                                     <View className='food_item_top'>
                                         <Avatar size='large' text={item.name} pic={item.pics && item.pics.length && item.pics[0] && item.pics[0].url} />
                                         <View className='food_item_info_wrapper'>
@@ -156,12 +159,14 @@ export default class Index extends Component {
                             <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/empty.png' />
                         </View>
                         <View className='empty_title'>这个菜还没有被收录到熊家厨房</View>
-                        <View className='empty_text_wrapper'>
-                            <View className='empty_text'>马上添加</View>
-                            <View className='right_arrow'>
-                                <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
-                            </View>
-                        </View>
+                        {
+                            USER_TYPE <= RABBIT ? <View className='empty_text_wrapper' onClick={this.navigateTo.bind(this, '/pages/add/index?type=dish')}>
+                                <View className='empty_text'>马上添加</View>
+                                <View className='right_arrow'>
+                                    <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/right_arrow.png' />
+                                </View>
+                            </View> : null
+                        }
                     </View> : null
                 }
                 {

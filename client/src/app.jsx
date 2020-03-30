@@ -31,6 +31,7 @@ class App extends Component {
       'pages/index/index',
       'pages/menu/index',
       'pages/add/index',
+      'pages/edit/index',
       'pages/confirm/index',
       'pages/note/index',
       'pages/success/index',
