@@ -158,7 +158,7 @@ export default class Index extends Component {
                         <View className='empty_image'>
                             <Image src='https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/common_icon/empty.png' />
                         </View>
-                        <View className='empty_title'>这个菜还没有被收录到熊家厨房</View>
+                        <View className='empty_title'>{name && name.trim() ? '这个菜还没有被收录到熊家厨房' : '冰箱里什么也没有'}</View>
                         {
                             USER_TYPE <= RABBIT ? <View className='empty_text_wrapper' onClick={this.navigateTo.bind(this, '/pages/add/index?type=dish')}>
                                 <View className='empty_text'>马上添加</View>

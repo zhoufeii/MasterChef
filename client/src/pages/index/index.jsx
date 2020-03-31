@@ -64,7 +64,7 @@ export default class Index extends Component {
         {
           image: 'https://wecip.oss-cn-hangzhou.aliyuncs.com/masterChef/index_icon/%E7%88%B1%E5%BF%83.png',
           value: '我爱兔兔',
-          url: '/pages/love/index',
+          url: '/pages/myBunny/index',
           role: RABBIT,
         }
       ],
