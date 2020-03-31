@@ -109,7 +109,7 @@ exports.main = async event => {
             },
           },
           templateId: message.templateId,
-          miniprogramState: 'developer'
+          miniprogramState: 'formal'
         });
         // 发送成功后将消息的状态改为已发送
         return db
