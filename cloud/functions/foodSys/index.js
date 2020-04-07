@@ -55,8 +55,8 @@ exports.main = async event => {
     return await db.collection(`sys`).aggregate()
       .lookup({
         from: `foods`,
-        localField: 'name',
-        foreignField: 'sysName',
+        localField: '_id',
+        foreignField: 'sysId',
         as: 'containFoods',
       })
       .end()

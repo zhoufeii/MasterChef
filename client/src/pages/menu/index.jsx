@@ -132,6 +132,7 @@ export default class DetailBanner extends Component {
       data: { ...data, action: 'getFoodsBySys', env },
       complete: (res = {}) => {
         const result = res.result && res.result.list || [];
+        console.log(result)
         const sysList = result.filter(item => {
           return item.containFoods.length
         }).map(item => {
