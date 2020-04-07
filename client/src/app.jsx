@@ -9,7 +9,7 @@ import { setGlobalData } from "./utils/globalData";
 class App extends Component {
 
   componentDidMount() {
-    const env = 'dev-uel3w' && 'online-p5ijz';
+    const env = 'dev-uel3w' || 'online-p5ijz';
     if (process.env.TARO_ENV === 'weapp') {
       console.log(`process.env.NODE_ENV: ${env}`)
       Taro.cloud.init({

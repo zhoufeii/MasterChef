@@ -1,25 +1,25 @@
 // // 云函数入口文件
 const cloud = require('wx-server-sdk')
-const Core = require('@alicloud/pop-core');
+// const Core = require('@alicloud/pop-core');
 
-const client = new Core({
-  accessKeyId: 'LTAI4FrfUcV6RLmC2f8x8dZs',
-  accessKeySecret: 'QVt5VCvn23RvVAMfOrbaL3dcpKpp8W',
-  endpoint: 'https://dysmsapi.aliyuncs.com',
-  apiVersion: '2017-05-25'
-});
+// const client = new Core({
+//   accessKeyId: '',
+//   accessKeySecret: '',
+//   endpoint: 'https://dysmsapi.aliyuncs.com',
+//   apiVersion: '2017-05-25'
+// });
 
-const params = {
-  "RegionId": "cn-hangzhou",
-  "PhoneNumbers": "18868412098",
-  "SignName": "小曹课程管家",
-  "TemplateCode": "SMS_123669090",
-  "TemplateParam": "{\"weekday\":\"星期一\",\"course\":\"语文\"}"
-}
+// const params = {
+//   "RegionId": "cn-hangzhou",
+//   "PhoneNumbers": "18868412098",
+//   "SignName": "小曹课程管家",
+//   "TemplateCode": "SMS_123669090",
+//   "TemplateParam": "{\"weekday\":\"星期一\",\"course\":\"语文\"}"
+// }
 
-const requestOption = {
-  method: 'POST'
-};
+// const requestOption = {
+//   method: 'POST'
+// };
 
 exports.main = async event => {
   const { action = '', env = '' } = event;
@@ -109,7 +109,7 @@ exports.main = async event => {
             },
           },
           templateId: message.templateId,
-          miniprogramState: 'formal'
+          miniprogramState: 'trial'
         });
         // 发送成功后将消息的状态改为已发送
         return db
@@ -125,11 +125,11 @@ exports.main = async event => {
       }
     });
 
-    client.request('SendSms', params, requestOption).then((result) => {
-      console.log(JSON.stringify(result));
-    }, (ex) => {
-      console.log(ex);
-    })
+    // client.request('SendSms', params, requestOption).then((result) => {
+    //   console.log(JSON.stringify(result));
+    // }, (ex) => {
+    //   console.log(ex);
+    // })
 
     return Promise.all(sendPromises);
   }
