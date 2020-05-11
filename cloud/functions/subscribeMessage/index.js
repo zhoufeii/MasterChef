@@ -41,6 +41,9 @@ exports.main = async event => {
     case 'sendSubscribeMessage': {
       return sendSubscribeMessage(event)
     }
+    case 'sendSubscribeMessageToOwner': {
+      return sendSubscribeMessageToOwner(event)
+    }
     default: {
       return;
     }
@@ -63,14 +66,30 @@ exports.main = async event => {
     })
   }
 
+  async function sendSubscribeMessageToOwner(event) {
+    const { deliverDate = '', list = [], templateId = '', page = '' } = event;
+    return await db.collection(`subscribeMessage`).add({
+      data: {
+        touser: 'ol7y55WIRrgCHFserd8c1Tca4cg4',   // 小号 openId
+        data: {
+          deliverDate,
+          list
+        },
+        page,
+        templateId,
+        done: false,
+      }
+    })
+  }
+
   async function sendSubscribeMessage(event) {
-    const { OPENID } = cloud.getWXContext()
+    // const { OPENID } = cloud.getWXContext()
     const messages = await db
       .collection('subscribeMessage')
       // 查询条件这里做了简化，只查找了状态为未发送的消息
       .where({
         done: false,
-        touser: OPENID,
+        // touser: OPENID,
       })
       .get();
 
